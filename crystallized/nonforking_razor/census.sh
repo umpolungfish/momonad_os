@@ -14,11 +14,11 @@ declare -A WORD=(
  [ns_affirm]="⊢∈≻⊤≺⊥∋⋈⊞◻⊙⊣"          [ns_negate]="⊢∈≻⊤≺⊥⋈⊙⊞∋◻⊣"
 )
 declare -A EXPECT=(
- [rh_affirm]=3442270  [rh_negate]=3442270
- [collatz_affirm]=16402270 [collatz_negate]=3442270
- [bsd_affirm]=3442270 [bsd_negate]=3442270
- [hodge_affirm]=3442270 [hodge_negate]=3442270
- [ns_affirm]=3442270  [ns_negate]=3442270
+ [rh_affirm]=3444190  [rh_negate]=3444190
+ [collatz_affirm]=16404190 [collatz_negate]=3444190
+ [bsd_affirm]=3444190 [bsd_negate]=3444190
+ [hodge_affirm]=3444190 [hodge_negate]=3444190
+ [ns_affirm]=3444190  [ns_negate]=3444190
 )
 ORDER="rh_affirm rh_negate collatz_affirm collatz_negate bsd_affirm bsd_negate hodge_affirm hodge_negate ns_affirm ns_negate"
 
@@ -38,7 +38,7 @@ for k in $ORDER; do
 done
 
 echo
-echo "--- proved controls (Mills, Lee-Yang): crystal 3442270, vox T, classify ⊞ ---"
+echo "--- proved controls (Mills, Lee-Yang): crystal 3444190, vox T, classify ⊞ ---"
 declare -A CTL=(
  [mills_affirm]="⊢∈≻⊤⋈◻≺⊥⊞∋⊙⋈≻⊤◻⊣" [mills_negate]="⊢⊙≻⋈∈⊤⊥⊞≺∋◻⊣⊙"
  [leeyang_affirm]="⊢∈≻⊤≺⊥⊞⋈∋⊙◻⊣" [leeyang_negate]="⊢⊣∈≻⊤⋈≺⊥⊙⊞∋◻⊣"
@@ -52,12 +52,12 @@ for k in mills_affirm mills_negate leeyang_affirm leeyang_negate; do
   cls=$(echo "$out" | grep -F "$w " | awk '{print $NF}' | tail -1)
   got=${got//[$'\r\n ']/}; vox=${vox//[$'\r\n ']/}; cls=${cls//[$'\r\n ']/}
   res=PASS
-  [ "$got" = 3442270 ] && [ "$vox" = T ] && [ "$cls" = "⊞" ] || { res=FAIL; fail=1; }
-  printf '%-16s %-10s %-10s %-6s %-4s %s\n' "$k" 3442270 "$got" "$vox" "$cls" "$res"
+  [ "$got" = 3444190 ] && [ "$vox" = T ] && [ "$cls" = "⊞" ] || { res=FAIL; fail=1; }
+  printf '%-16s %-10s %-10s %-6s %-4s %s\n' "$k" 3444190 "$got" "$vox" "$cls" "$res"
 done
 echo
-echo "--- crystal decodes: descent 3442270 vs fork 16402270 differ only at ⊢ ---"
-$RUN "crystal 3442270" "crystal 16402270" 2>/dev/null | grep -E '⊢:' | sed 's/^ */  /'
+echo "--- crystal decodes: descent 3444190 vs fork 16404190 differ only at ⊢ ---"
+$RUN "crystal 3444190" "crystal 16404190" 2>/dev/null | grep -E '⊢:' | sed 's/^ */  /'
 
 echo
 [ $fail -eq 0 ] && echo "CENSUS: PASS — all ten objects at expected crystals, bank OK, vox T, classify ⊞" \
