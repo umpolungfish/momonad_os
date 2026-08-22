@@ -51,9 +51,15 @@ pub static K_ORD: [IgPrim; 5] = [
     IgPrim::yea, IgPrim::loll, IgPrim::egg, IgPrim::on, IgPrim::air,
 ];
 
-/// G ordinal: ice < bib < thigh
+/// G ordinal: bib < thigh < ice
+/// Core.lean `inductive Granularity` declares bib, thigh, ice in that order, and
+/// notes "constructor order determines Ord; bib is first (lowest ordinal)". This
+/// table had the enum declaration order (ice=26, bib=27, thigh=28) instead, which
+/// is not the ordinal — every other family here carries the deliberate ordinal,
+/// not the enum order. Corrected 2026-08-22; moves every crystal address whose
+/// tuple carries a G value, by -1920 (ice) or +960 (bib, thigh).
 pub static G_ORD: [IgPrim; 3] = [
-    IgPrim::ice, IgPrim::bib, IgPrim::thigh,
+    IgPrim::bib, IgPrim::thigh, IgPrim::ice,
 ];
 
 /// C ordinal: vow < gag < measure < ooze
@@ -1225,8 +1231,8 @@ pub fn primitive_short(prim: IgPrim) -> &'static str {
         IgPrim::on => "⊤_trap", IgPrim::egg => "⊤_↓",
         IgPrim::loll => "⊤_~", IgPrim::yea => "⊤_↑",
         IgPrim::air => "⊤_MBL",
-        IgPrim::ice => "∈_ℵ", IgPrim::bib => "∈_ℶ",
-        IgPrim::thigh => "∈_ℷ",
+        IgPrim::ice => "∈_univ", IgPrim::bib => "∈_loc",
+        IgPrim::thigh => "∈_meso",
         IgPrim::measure => "∋_seq", IgPrim::vow => "∋_∧",
         IgPrim::gag => "∋_∨", IgPrim::ooze => "∋_⊛",
         IgPrim::monad => "⊙_⊙", IgPrim::roar => "⊙_ℂ",

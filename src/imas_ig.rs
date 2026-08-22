@@ -273,7 +273,7 @@ impl IgTuple {
             else { IgPrim::yea };
 
         // G — Cardinality from IFIX + diversity
-        // This axis is ℵ / ℶ / ℷ — it counts DISTINCT MARKS, not fixations. Branching
+        // This axis is bib / thigh / ice — it counts DISTINCT MARKS, not fixations. Branching
         // on sx welded it to k_val's `sx == 8`, so eight fixations forced ℵ and the
         // pairs (⊤𐑪,∈𐑔), (⊤𐑪,∈𐑚) and every (⊤𐑺,·) became unwritable: 998 catalog
         // entries, ten_sefirot and CLINK L9 among them. `--recalibrate` walks ⊤ and ∈

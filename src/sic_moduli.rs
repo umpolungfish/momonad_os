@@ -548,7 +548,7 @@ pub fn grammar_encoding() -> String {
     s.push_str("  < (parity)    𐑹      Frobenius-special: μ∘δ=id exactly\n");
     s.push_str("  ⋈ (fidelity)  𐑐      quantum coherence essential\n");
     s.push_str("  ⊤ (kinetics)  𐑧      slow/near-equilibrium (class field)\n");
-    s.push_str("  ∈ (card.)     𐑔      maximal coupling (ℵ / all-of-field)\n");
+    s.push_str("  ∈ (card.)     𐑔      maximal coupling (all-of-field)\n");
     s.push_str("  ∋ (compos.)   𐑠      sequential (tower ascent)\n");
     s.push_str("  ⊙ (critical)  ⊙       self-modeling gate open\n");
     s.push_str("  ⊥ (chirality) 𐑫      eternal (class group permanent)\n");
