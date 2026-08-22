@@ -3,7 +3,7 @@ use crate::tokens::{period as tok_period, signature, Program, Token};
 /// Crystal of Types — 17,280,000-address type space.
 ///
 /// Address = Σᵢ (primitive_index[i] × STRIDE[i])
-/// Strides: [5184000, 1728000, 576000, 144000, 48000, 12000, 4000, 800, 200, 50, 10, 1]
+/// Strides: [4320000, 864000, 216000, 43200, 14400, 2880, 960, 240, 48, 12, 4, 1]
 /// Cardinalities (D,T,R,P,F,K,G,C,Phi,H,S,Omega): [4,5,4,5,3,5,3,4,5,4,3,4]
 /// Total number of distinct types in the crystal.
 /// Computed from the product of all primitive family cardinalities.
