@@ -1,9 +1,21 @@
-Fix the bare-metal build: f64::round() doesn't exist in no_std
+Fix two real bugs the tests were catching, both traced to source
 
-period_finding_ecdlp.rs called the std-only f64::round() method, which
-doesn't exist without std and broke the real x86_64-unknown-none release
-and debug builds outright (the hosted feature build masked it, since it
-links against a full std). Every other float call in this crate goes
-through libm's free functions; switched this one to match. Verified
-clean across all three: bare-metal release, bare-metal debug, and the
-hosted build, zero warnings on all three.
+modinv had its extended-Euclid bookkeeping variables initialized backward
+(x0/x1 should start 1/0, not 0/1) and its final reduction took the
+quotient instead of the remainder from div_rem_pos. Together these made
+every call return the wrong inverse, modinv(1, m) came back as 0, which
+silently zeroed every k_candidate downstream of it.
+
+shl_bits wrote each destination limb with a plain assignment instead of
+OR-accumulating, so a carry the previous source limb had already written
+into that slot got clobbered by the next limb's own shifted value.
+shl_bits(3) on a 2-limb number dropped exactly 4 units, enough to turn
+12345*2^60 / 2^60 into 12337 instead of 12345 downstream in div_rem_pos.
+
+Traced both from oracle_closes_mu_delta failing, through modinv returning
+0 for a trivial case, to n_val/r itself being wrong before modinv was
+ever reached. Also removed an unused import in examples/parse_tower.rs.
+Verified clean: bare-metal release and debug both build with zero
+warnings, the hosted feature build has zero warnings, and cargo test
+passes all 244 unit tests plus the SIC-POVM integration test, including
+both tests that were failing before this.

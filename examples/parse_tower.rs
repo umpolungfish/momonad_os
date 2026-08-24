@@ -2,7 +2,6 @@
 // Run with: cargo run --example parse_tower
 
 use std::fs;
-use std::path::Path;
 
 fn main() {
     let base_path = "/home/mrnob0dy666/imsgct/d12_sic_build";

@@ -480,7 +480,14 @@ impl BigInt {
         let mut limbs = vec![0u64; self.limbs.len() + extra as usize + 1];
         for i in 0..self.limbs.len() {
             let dst = i + limb_s as usize;
-            limbs[dst] = self.limbs[(i) as usize] << bit_s;
+            // `|=`, not `=`: dst may already hold the carry-in this loop
+            // wrote from the PREVIOUS source limb (dst == (i-1)+limb_s+1
+            // when bit_s > 0), and a plain assignment here clobbered it —
+            // e.g. shl_bits(3) on a 2-limb value silently dropped exactly
+            // the carry out of limb 0 into limb 1, corrupting every
+            // downstream div_rem_pos call whose divisor needed that shift
+            // to normalize (12345*2^60 / 2^60 came back as 12337).
+            limbs[dst] |= self.limbs[(i) as usize] << bit_s;
             if bit_s > 0 && dst + 1 < limbs.len() {
                 limbs[dst + 1] |= self.limbs[(i) as usize] >> (64 - bit_s);
             }
@@ -530,8 +537,14 @@ impl BigInt {
         if m.is_zero() || m.is_neg() { return None; }
         let mut a = self.abs();
         let mut b = m.abs();
-        let mut x0 = Self::zero();
-        let mut x1 = Self::one();
+        // Standard extended-Euclid bookkeeping: x0 tracks "old_s" (the
+        // coefficient of the original a), x1 tracks "s". old_s starts at 1
+        // (a = 1*a + 0*m), s starts at 0 — these were swapped, which made
+        // every inverse come back as 0 whenever a's own coefficient stayed
+        // trivial through the loop (e.g. modinv(1, m), the exact case that
+        // silently zeroed every k_candidate downstream).
+        let mut x0 = Self::one();
+        let mut x1 = Self::zero();
         while !b.is_zero() {
             let (q, r) = a.div_rem_pos(&b);
             let x2 = x0.sub_limbs(&x1.mul_limbs(&q));
@@ -541,9 +554,12 @@ impl BigInt {
             x1 = x2;
         }
         if !a.is_one() { return None; } // gcd != 1
-        // x0 is the inverse modulo m (in magnitude); reduce mod m
+        // x0 is the inverse modulo m, but may be negative or exceed m in
+        // magnitude; reduce mod m by remainder, not quotient (`.0` is the
+        // quotient of div_rem_pos, `.1` is the remainder — using `.0` here
+        // discarded the actual inverse and returned the division count).
         let x0 = if x0.is_neg() { m.sub_limbs(&x0.abs()) } else { x0.abs() };
-        let x0 = x0.div_rem_pos(m).0;
+        let x0 = x0.div_rem_pos(m).1;
         Some(x0)
     }
 
@@ -903,7 +919,12 @@ pub fn best_approximation(target_num: &BigInt, target_den: &BigInt, max_den: &Bi
     let convs = convergents(target_num, target_den, 256);
     let mut best_p = BigInt::zero();
     let mut best_q = BigInt::one();
-    let mut best_err = BigInt::from_u64(u64::MAX);
+    // A genuinely positive sentinel: BigInt::from_u64(u64::MAX) is negative
+    // under from_u64's "treat overflow as negative" convention (v >
+    // u64::MAX/2 sets neg=true), which made this sentinel silently
+    // unbeatable — every real, non-negative error compared greater than a
+    // negative number, so best_p/best_q never updated for any input at all.
+    let mut best_err = BigInt { limbs: vec![u64::MAX], neg: false };
     // cross-multiplication: |target_num * q - target_den * p| = |num*q - den*p|
     for (p, q) in &convs {
         if q.cmp(max_den) == core::cmp::Ordering::Greater { continue; }
