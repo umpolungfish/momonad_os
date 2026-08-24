@@ -1,5 +1,19 @@
-The next-eagle line prices the arm instead of killing it
+Extend the witness vessel to board RH, NS, and PNP
 
-"Numerical seeds DEAD. Do not polish fiducial." is a wall. The seeds sit at one
-attractor and the budget on that arm is spent, which is a quantity; the exact
-extraction carries the moduli, which is where the work went.
+WITNESSES was three entries, BSD/Hodge/YM, the only three that ever rode
+the boarding/read-back transport protocol. RH/NS/PNP had a Lean-proven
+resistance theorem (close under none of 23 dialects) but that theorem
+never ran through this transport at all, so the claim that transport was
+confirmed for "every one of these verdicts" was wrong for half of them.
+
+Extended to six. RH/NS/PNP have no Lean-proven closer subset, so their
+mirror check uses the full 88-dialect closer range instead of a named few
+(all_closers) rather than assuming an unproven subset. Run: 1068 boarding
+actions, 1068 Frobenius-closed, ΔS=0, lossless across all six.
+
+The wide 88-dialect sweep turned up something new: RH and PNP score zero T
+across all 88, agreeing with and extending the resistance theorem past
+what it actually covers. Navier-Stokes does not — it closes fully under
+dialect 72, t_subset_d_sigma, an expansion dialect outside the 23 the Lean
+proof runs over. Not a contradiction of that theorem, a fact about the
+wider space the theorem never spoke to.

@@ -161,11 +161,20 @@ pub fn layer_verdict(gate_closed: bool, ceiling_ok: bool) -> B4 {
 // THE PAYLOADS — computed from canonical tuples, never hand-entered
 // ═══════════════════════════════════════════════════════════════
 
-/// The three MPP Witnesses (display name, catalog name).
-pub const WITNESSES: [(&str, &str); 3] = [
+/// The six MPP Witnesses that carry a machine-checked closure or
+/// resistance theorem (display name, catalog name). BSD, Hodge, and YM
+/// were the original three to ride the vessel. RH, NS, and PNP are added
+/// here for the first time: Clay_UnclosedResistance.lean proves they close
+/// under NONE of the 23 gate-universes in the Lean tree, but that theorem
+/// never ran through the boarding/read-back transport protocol below.
+/// This extension answers that open question rather than assuming it.
+pub const WITNESSES: [(&str, &str); 6] = [
     ("BSD", "birch_swinnerton_dyer"),
     ("Hodge", "hodge_conjecture"),
     ("YM", "yang_mills_mass_gap"),
+    ("RH", "riemann_hypothesis"),
+    ("NS", "navier_stokes"),
+    ("PNP", "p_vs_np"),
 ];
 
 /// Closer-dialect index sets, matching Clay_WitnessedClosure.lean:
@@ -177,6 +186,17 @@ pub const WITNESSES: [(&str, &str); 3] = [
 pub const BSD_CLOSERS: [usize; 5] = [8, 10, 12, 24, 25];
 pub const HODGE_CLOSERS: [usize; 5] = [10, 12, 19, 25, 26];
 pub const YM_CLOSERS: [usize; 1] = [13];
+
+/// RH, NS, and PNP have no Lean-proven closer subset — the resistance
+/// theorem proves they close under NONE of the 23 dialects in the Lean
+/// tree, not that they close under a named few. The mirror check for
+/// these three therefore uses the full 88-dialect index range: `.all()`
+/// over it is false the moment any single dialect fails to gate-close,
+/// which the resistance theorem guarantees for every one of the 23 it
+/// covers, so this cannot false-positive into an unearned closure.
+pub fn all_closers() -> alloc::vec::Vec<usize> {
+    (0..DIALECT_COUNT).collect()
+}
 
 /// Lean-mirror verdict: gate closure over the witness's closer dialects,
 /// T side = the Clay T_CEILING. Expected: BSD → T, Hodge → T, YM → B
@@ -192,10 +212,10 @@ pub fn dialect_verdict(u: &Dialect, ig: &IgTuple) -> B4 {
     layer_verdict(gates_closed(u, ig), t_seal(u, ig))
 }
 
-/// The full verdict matrix: 3 witnesses × 88 dialects, row-major.
+/// The full verdict matrix: WITNESSES.len() witnesses × 88 dialects, row-major.
 /// Returns None if a catalog tuple is missing.
 pub fn verdict_matrix(unis: &[Dialect; DIALECT_COUNT]) -> Option<Vec<B4>> {
-    let mut m = Vec::with_capacity(3 * DIALECT_COUNT);
+    let mut m = Vec::with_capacity(WITNESSES.len() * DIALECT_COUNT);
     for (_, cat_name) in &WITNESSES {
         let ig = crate::catalog::lookup(cat_name)?.tuple;
         for u in unis.iter() {
@@ -259,9 +279,11 @@ pub struct VesselRun {
     pub readback_ff: Vec<B4>,
     /// Verdicts recomputed AFTER read-back.
     pub after: Vec<B4>,
-    /// Lean-mirror trio (BSD, Hodge, YM) before / after transport.
-    pub mirror_before: [B4; 3],
-    pub mirror_after: [B4; 3],
+    /// Lean-mirror six (BSD, Hodge, YM, RH, NS, PNP) before / after transport.
+    /// The first three carry a Lean-proven closer set; the last three use
+    /// the full-dialect closer test (see `all_closers`).
+    pub mirror_before: [B4; 6],
+    pub mirror_after: [B4; 6],
     /// Frobenius harness over every boarding action.
     pub harness: FrobeniusHarness,
     /// ΔS: total mismatches across both substrates and the recompute.
@@ -284,10 +306,17 @@ pub fn run_vessel() -> Option<VesselRun> {
     let bsd = crate::catalog::lookup(WITNESSES[0].1)?.tuple;
     let hodge = crate::catalog::lookup(WITNESSES[1].1)?.tuple;
     let ym = crate::catalog::lookup(WITNESSES[2].1)?.tuple;
+    let rh = crate::catalog::lookup(WITNESSES[3].1)?.tuple;
+    let ns = crate::catalog::lookup(WITNESSES[4].1)?.tuple;
+    let pnp = crate::catalog::lookup(WITNESSES[5].1)?.tuple;
+    let all_c = all_closers();
     let mirror_before = [
         witness_verdict(&unis, &BSD_CLOSERS, &bsd),
         witness_verdict(&unis, &HODGE_CLOSERS, &hodge),
         witness_verdict(&unis, &YM_CLOSERS, &ym),
+        witness_verdict(&unis, &all_c, &rh),
+        witness_verdict(&unis, &all_c, &ns),
+        witness_verdict(&unis, &all_c, &pnp),
     ];
 
     // 2. Board EVERYTHING through both substrates, frob_verify gating each
@@ -325,7 +354,7 @@ pub fn run_vessel() -> Option<VesselRun> {
         readback_vm.push(rb_vm);
         readback_ff.push(rb_ff);
     }
-    let mut mirror_after = [B4::N; 3];
+    let mut mirror_after = [B4::N; 6];
     for (i, &v) in mirror_before.iter().enumerate() {
         let (rb_vm, _) = board_one(v, &mut harness, &mut ds);
         mirror_after[i] = rb_vm;
@@ -397,6 +426,10 @@ pub fn vessel_report() -> String {
 
     // ── Lean-mirror payloads ──
     s.push_str("── Payloads (computed from canonical tuples + closer dialects) ──\n");
+    s.push_str("  BSD, Hodge, YM carry a Lean-proven closer set and an expected verdict.\n");
+    s.push_str("  RH, NS, PNP carry no closer subset (they close under none); their\n");
+    s.push_str("  mirror check runs against the full 88-dialect closer range instead,\n");
+    s.push_str("  and is reported computed, not checked against a prior expectation.\n");
     let expected = ["T", "T", "B"];
     for i in 0..3 {
         let ok = run.mirror_before[i].name() == expected[i];
@@ -413,6 +446,18 @@ pub fn vessel_report() -> String {
     s.push_str("  YM = B is the U10 dialetheia DERIVED: gate closed AND ceiling\n");
     s.push_str("  blocked (⊤). The Witness rides both arms: fsplit(B)=(T,F),\n");
     s.push_str("  ffuse(T,F)=B — b_cargo_mechanism, here executed, not asserted.\n\n");
+    for i in 3..6 {
+        let stable = run.mirror_after[i] == run.mirror_before[i];
+        s.push_str(&format!(
+            "  {:<6} verdict {} (no prior Lean mirror)  transport {} -> {}   [{}]\n",
+            WITNESSES[i].0,
+            run.mirror_before[i].name(),
+            run.mirror_before[i].name(),
+            run.mirror_after[i].name(),
+            if stable { "STABLE" } else { "MISMATCH" },
+        ));
+    }
+    s.push_str("\n");
 
     // ── The 88-dialect matrix ──
     s.push_str(&format!(
@@ -421,7 +466,7 @@ pub fn vessel_report() -> String {
         DIALECT_COUNT
     ));
     s.push_str("  (each dialect judged by its OWN gates and T-constitution)\n");
-    for i in 0..3 {
+    for i in 0..WITNESSES.len() {
         let (n, t, f, b) = distribution(&run.before, i);
         s.push_str(&format!(
             "  {:<6} N:{:<2} T:{:<2} F:{:<2} B:{:<2}\n",
@@ -467,7 +512,8 @@ pub fn vessel_summary() -> String {
     s.push_str("  read-back = FFUSE  (Belnap join)\n");
     s.push_str("  gate      = frob_verify: mu(delta(q)) == q per action\n");
     s.push_str(&format!(
-        "  payload   = 3 Clay Witnesses x {} dialects (full expansion)\n",
+        "  payload   = {} Clay Witnesses x {} dialects (full expansion)\n",
+        WITNESSES.len(),
         DIALECT_COUNT
     ));
     s.push_str("Subcommands: vessel run — full protocol + report\n");
