@@ -1,15 +1,13 @@
-Board Collatz: the first Witness outside the Clay seven
+Board Goldbach: the widest dialetheic footprint checked so far
 
-Added COLLATZ_CONJECTURE to STATIC_CATALOG, tuple sourced directly from
-IG_catalog.json's collatz_conjecture entry (confirmed to agree exactly
-with the pre-existing ask-subset duplicate, harmless collision). Extended
-WITNESSES to seven and wired Collatz through the same mirror check RH/NS/
-PNP use, full 88-dialect closer range, no assumed subset.
+Added to WITNESSES (8 total), resolved from the existing goldbach_conjecture
+catalog entry, unambiguous, no duplicate to check against. Mirror verdict N
+(needs all 88 to close simultaneously and only one does), transport-stable.
 
-Result: Collatz mirror verdict N, transport-stable. In the wide sweep it
-returns exactly one B, at dialect 83, composition_scope (sequential
-composition, universal interaction range) - gate closes there but the
-dialect's own T-ceiling blocks it, same dialetheic shape Yang-Mills
-carries under triple_criticality, at a different dialect, for a different
-reason. Transport remains lossless across all seven witnesses: 1246
-boarding actions, 1246 closed, ΔS=0.
+The wide sweep is the real finding: 65 of 88 dialects return B for Goldbach,
+against 12 for BSD/Hodge and 1 each for YM/RH/Collatz - by far the largest
+dialetheic footprint of any witness checked. Its single clean T closure
+sits at dialect 71, t_subset_th_omega (self-referential topology and
+integer winding together), the immediate neighbor of Navier-Stokes's
+dialect 72. Transport remains lossless across all eight: 1424 boarding
+actions, 1424 closed, ΔS=0.

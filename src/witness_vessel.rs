@@ -167,7 +167,7 @@ pub fn layer_verdict(gate_closed: bool, ceiling_ok: bool) -> B4 {
 /// been run through boarding/read-back. Collatz is the first Witness with
 /// no Clay-tied theorem behind it at all, open-ended: nothing here
 /// predicts what its verdict should be, so it is boarded to find out.
-pub const WITNESSES: [(&str, &str); 7] = [
+pub const WITNESSES: [(&str, &str); 8] = [
     ("BSD", "birch_swinnerton_dyer"),
     ("Hodge", "hodge_conjecture"),
     ("YM", "yang_mills_mass_gap"),
@@ -175,6 +175,7 @@ pub const WITNESSES: [(&str, &str); 7] = [
     ("NS", "navier_stokes"),
     ("PNP", "p_vs_np"),
     ("Collatz", "collatz_conjecture"),
+    ("Goldbach", "goldbach_conjecture"),
 ];
 
 /// Closer-dialect index sets, matching Clay_WitnessedClosure.lean:
@@ -283,8 +284,8 @@ pub struct VesselRun {
     /// after transport. The first three carry a Lean-proven closer set;
     /// RH/NS/PNP use the full-dialect closer test (see `all_closers`);
     /// Collatz has no theorem behind it at all and uses the same full test.
-    pub mirror_before: [B4; 7],
-    pub mirror_after: [B4; 7],
+    pub mirror_before: [B4; 8],
+    pub mirror_after: [B4; 8],
     /// Frobenius harness over every boarding action.
     pub harness: FrobeniusHarness,
     /// ΔS: total mismatches across both substrates and the recompute.
@@ -311,6 +312,7 @@ pub fn run_vessel() -> Option<VesselRun> {
     let ns = crate::catalog::lookup(WITNESSES[4].1)?.tuple;
     let pnp = crate::catalog::lookup(WITNESSES[5].1)?.tuple;
     let collatz = crate::catalog::lookup(WITNESSES[6].1)?.tuple;
+    let goldbach = crate::catalog::lookup(WITNESSES[7].1)?.tuple;
     let all_c = all_closers();
     let mirror_before = [
         witness_verdict(&unis, &BSD_CLOSERS, &bsd),
@@ -320,6 +322,7 @@ pub fn run_vessel() -> Option<VesselRun> {
         witness_verdict(&unis, &all_c, &ns),
         witness_verdict(&unis, &all_c, &pnp),
         witness_verdict(&unis, &all_c, &collatz),
+        witness_verdict(&unis, &all_c, &goldbach),
     ];
 
     // 2. Board EVERYTHING through both substrates, frob_verify gating each
@@ -357,7 +360,7 @@ pub fn run_vessel() -> Option<VesselRun> {
         readback_vm.push(rb_vm);
         readback_ff.push(rb_ff);
     }
-    let mut mirror_after = [B4::N; 7];
+    let mut mirror_after = [B4::N; 8];
     for (i, &v) in mirror_before.iter().enumerate() {
         let (rb_vm, _) = board_one(v, &mut harness, &mut ds);
         mirror_after[i] = rb_vm;
