@@ -47,6 +47,8 @@ impl Carrier16 {
     pub fn label(self) -> String {
         match self.0 {
             0b0000 => "N".to_string(),
+            0b0100 => "T".to_string(),
+            0b1000 => "F".to_string(),
             0b0111 => "Ttf".to_string(),
             0b1111 => "A".to_string(),
             0b1100 => "TF".to_string(),
@@ -281,7 +283,7 @@ pub fn factors_from_period(a: u64, n: u64, r: u64) -> (Option<u64>, Option<u64>)
     let p = gcd(half.wrapping_sub(1), n);
     let q = gcd(half + 1, n);
     if p > 1 && q > 1 && p * q == n {
-        (Some(p), Some(q))
+        if p < q { (Some(p), Some(q)) } else { (Some(q), Some(p)) }
     } else {
         (None, None)
     }
@@ -297,10 +299,12 @@ pub fn qubits_for(n: u64) -> usize {
 }
 
 /// Fusion space dimension F_{m} (vacuum sector, m = strands - 1).
+/// Kernel convention F_1=1, F_2=1: 7 strands → F_6=8, 15 → F_14=377,
+/// 19 → F_18=2584 (first holding d=2048).
 pub fn fib(m: usize) -> usize {
     let (mut a, mut b) = (1usize, 1usize);
-    if m == 0 { return 1; }
-    for _ in 1..m { let t = a + b; a = b; b = t; }
+    if m <= 1 { return 1; }
+    for _ in 2..m { let t = a + b; a = b; b = t; }
     b
 }
 
@@ -461,12 +465,22 @@ mod tests {
     }
 
     #[test]
-    fn shor_n21_a5() {
-        let r = run_dialetheic_fib_shor(21, 5);
+    fn shor_n21_a2() {
+        let r = run_dialetheic_fib_shor(21, 2);
         assert_eq!(r.period, 6);
         assert_eq!(r.belnap_cost, 12);
         assert_eq!(r.factor1, Some(3));
         assert_eq!(r.factor2, Some(7));
+    }
+
+    #[test]
+    fn shor_retry_case_ar2_neg1() {
+        // a=5, N=21: 5^(6/2) = 125 ≡ 20 ≡ -1 mod 21 — the standard Shor
+        // retry case; no factor is found and the report says so honestly.
+        let r = run_dialetheic_fib_shor(21, 5);
+        assert_eq!(r.period, 6);
+        assert_eq!(r.factor1, None);
+        assert_eq!(r.factor2, None);
     }
 
     #[test]
