@@ -181,8 +181,8 @@ impl ShorsBtc2Result {
     pub fn print_report(&self) {
         sprintln!("⊢⊙⋈∈≻⊤≺⊥∋⊞◻⊣ shors_btc_2 — Bitcoin Private Key Extraction");
         sprintln!("════════════════════════════════════════════════════════════════════════════");
-        sprintln!("Public Key: ({:x}, {:x})", self.public_key.x.0[0], self.public_key.y.0[0]);
-        sprintln!("Private Key: {:x}", self.private_key.0[0]);
+        sprintln!("Public Key: ({} , {})", self.public_key.x.to_hex_64(), self.public_key.y.to_hex_64());
+        sprintln!("Private Key: {}", self.private_key.to_hex_64());
         sprintln!("Execution Trace:");
         for (i, step) in self.execution_trace.iter().enumerate() {
             sprintln!("  {}: {}", i + 1, step);

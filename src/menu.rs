@@ -56,6 +56,7 @@ pub static SEALS_MENU: &[MenuItem] = &[
 pub static PROOF_MENU: &[MenuItem] = &[
     MenuItem { name: "list",      cmd: "proof list",      desc: "List available guided proofs", example: "proof list", submenu: None },
     MenuItem { name: "bootstrap", cmd: "proof bootstrap", desc: "The Grammar verifying itself (7 steps, auto-play)", example: "proof bootstrap", submenu: None },
+    MenuItem { name: "prooflift", cmd: "prooflift", desc: "Proof-lift report: undischarged claims and unrejoined forks as one object; `prooflift nest` runs the self-nest word, the proof of mu.delta=id itself (86065 glyphs, verdict T)", example: "prooflift nest", submenu: None },
 ];
 
 pub static EXEC_MENU: &[MenuItem] = &[
@@ -202,6 +203,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "distance", cmd: "distance", desc: "Hamming + weighted distance vs the ZFC baseline tuple (alias dist)", example: "distance", submenu: None },
     MenuItem { name: "join", cmd: "join", desc: "join of the active IG tuple with the ZFC baseline", example: "join", submenu: None },
     MenuItem { name: "sigma", cmd: "sigma", desc: "sigma <n> — analyze the Sigma(n) divisor ring", example: "sigma 5", submenu: None },
+    MenuItem { name: "ringspec", cmd: "ringspec", desc: "ringspec <w1> <w2> <w3> — the spectrum of a ring, in integers: bond weights around a cycle, clean bond 1, cross-link its reaction centres; three is the minimum", example: "ringspec 1 2 2 1", submenu: None },
     MenuItem { name: "clay", cmd: "clay", desc: "Clay Millennium structural status (machine-checked)", example: "clay", submenu: None },
     MenuItem { name: "psm", cmd: "psm", desc: "dialetheic alignment + measurement tests", example: "psm test", submenu: None },
     MenuItem { name: "entropy", cmd: "entropy", desc: "entropy experiment: dS vs tier promotion", example: "entropy tier", submenu: None },
@@ -226,7 +228,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "key-dissolver", cmd: "key-dissolver", desc: "SIC-narrowed bounded window before a BSGS split; recovers no real key", example: "key-dissolver 03f01d 40", submenu: None },
     MenuItem { name: "compiler", cmd: "compiler", desc: "Compile a braid to imasm/jones/lean, or a token word back to a braid", example: "compiler braid 1 2 1 --to imasm", submenu: None },
     MenuItem { name: "catalogue", cmd: "catalogue", desc: "Synthesize candidate operators; rank by novelty against the catalog", example: "catalogue synthesize --top 5", submenu: None },
-    MenuItem { name: "sk_forge", cmd: "sk_forge", desc: "Crystal Harvester: BIP39-SIC integrated structural gap analysis against O_∞ carriers; scalar is STRUCTURAL, never a key. Commands: forge, tuple, word, verify, carriers, bip39-sic, bip39-pipeline", example: "sk_forge bip39-sic", submenu: None },
+    MenuItem { name: "sk_forge", cmd: "sk_forge", desc: "Crystal Harvester: BIP39-SIC integrated structural gap analysis against O_∞ carriers; scalar is STRUCTURAL, never a key. Commands: forge, tuple, word, verify, carriers, bip39-sic, bip39-pipeline (alias sk-forge)", example: "sk_forge bip39-sic", submenu: None },
     MenuItem { name: "museum", cmd: "museum", desc: "The permanent collection of failed constructions — append-only negative knowledge", example: "museum open", submenu: None },
     MenuItem { name: "phase", cmd: "phase", desc: "Phase as an object: orbit spectrum, phase period, and two-word interference", example: "phase interference \u{22a2}\u{2208}\u{22a4}\u{220b} \u{22a2}\u{22a4}\u{2208}\u{220b}", submenu: None },
     MenuItem { name: "demonstrate", cmd: "demonstrate", desc: "Run a claim as an experiment: INPUT/OPERATION/OUTPUT/CHECK, computed live (alias demo)", example: "demonstrate mu-delta 1 2 -1", submenu: None },
