@@ -1110,6 +1110,11 @@ pub fn repl(k: &mut Kernel) {
                         let a_str = parts.next().unwrap_or("");
                         print_shor_gap(parse_u64(n_str), parse_u64(a_str));
                     }
+                    "dialetheic" => {
+                        let n_str = parts.next().unwrap_or("");
+                        let a_str = parts.next().unwrap_or("");
+                        print_shor_dialetheic(parse_u64(n_str), parse_u64(a_str));
+                    }
                     "help" => {
                         sprintln!("shor — Belnap Shor pipeline + 4-problem solutions");
                         sprintln!("  shor                 default pipeline (N=15,21)");
@@ -1119,6 +1124,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("  shor phase N a       Phase-augmented Shor (P1+P2 solved)");
                         sprintln!("  shor ring N a        IMASM ring walk verification (P4)");
                         sprintln!("  shor fib N a         Fibonacci anyon braid estimation (P3)");
+                        sprintln!("  shor dialetheic N a  Dialetheic Fibonacci Shor (ob3ect word ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈◻⊣)");
                         sprintln!("  shor integrated N a  All 4 problems integrated");
                     }
                     "phase" => {
@@ -4152,6 +4158,30 @@ fn print_shor_integrated(n_val: u64, a_val: u64) {
         sprintln!("  ✗ factorization failed");
     }
 }
+
+fn print_shor_dialetheic(n_val: u64, a_val: u64) {
+    use crate::dialetheic_fib_shor::{run_dialetheic_fib_shor, report};
+    if n_val == 0 || a_val == 0 {
+        sprintln!("  {}Dialetheic Fibonacci Shor (ob3ect word ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈◻⊣){}", style_section(), crate::style::reset());
+        sprintln!();
+        for (N, a) in &[(15u64, 7u64), (21, 5), (35, 2)] {
+            let r = run_dialetheic_fib_shor(*N, *a);
+            sprintln!("  N={:<4} a={} period={:<3} cost=2r={:<3} ratio={:.2} strands={} fusion=F_{}={} factors={}×{} verdict={}",
+                N, a, r.period, r.belnap_cost, r.ratio, r.strands, r.strands-1, r.fusion_dim,
+                r.factor1.unwrap_or(0), r.factor2.unwrap_or(0),
+                if r.walk.open_frames > 0 { "B (dialetheic)" } else { "T (closed)" });
+        }
+        sprintln!();
+        sprintln!("  usage: shor dialetheic N a   (e.g. shor dialetheic 15 7)");
+        sprintln!("  The 16₃ register walk is the control flow: ∈ splits T-arm/F-arm,");
+        sprintln!("  ⊤/⊥ evaluate constructive/destructive interference, ∋ fuses to TF.");
+        sprintln!("  Period r is read from the 2:1 B-bias/T-bias coherence cost ratio.");
+        return;
+    }
+    let r = run_dialetheic_fib_shor(n_val, a_val);
+    sprintln!("{}", report(&r));
+}
+
 
 
 fn parse_u64(s: &str) -> u64 {

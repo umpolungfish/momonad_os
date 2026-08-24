@@ -52,6 +52,7 @@ mod oracle;
 mod blackbox;
 mod axis_values;
 mod dialetheic_compiler;
+mod dialetheic_fib_shor;
 mod stark_geometer;
 mod dialect_necromancer;
 mod braid_apocrypha;
