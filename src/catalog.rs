@@ -531,6 +531,22 @@ const YANG_MILLS_MASS_GAP: CatalogEntry = entry(
     3, Domain::Mathematics,
 );
 
+// ── Collatz Conjecture (O₁) ──
+// Tuple sourced directly from the live Python IG_catalog.json
+// (imscribing_grammar/imscrbgrmr), entry "collatz_conjecture": the
+// twelve glyphs 𐑛𐑡𐑩𐑯𐑱𐑘𐑲𐑠𐑮𐑓𐑙𐑷 in canonical slot order, translated
+// glyph-for-glyph to IgPrim variants. Not previously a curated entry;
+// added here for the first major unsolved problem outside the Clay
+// seven to ride the witness vessel.
+const COLLATZ_CONJECTURE: CatalogEntry = entry(
+    "collatz_conjecture", "The Collatz conjecture — n/2 if even, 3n+1 if odd, always reaches 1",
+    IgPrim::dead, IgPrim::judge, IgPrim::ado,
+    IgPrim::nun, IgPrim::age, IgPrim::yea,
+    IgPrim::ice, IgPrim::measure,
+    IgPrim::roar, IgPrim::fee, IgPrim::hung, IgPrim::awe,
+    1, Domain::Mathematics,
+);
+
 // ── Wave Equation (O₁) ──
 const WAVE_EQUATION: CatalogEntry = entry(
     "wave_equation", "Classical wave equation — reversible propagation",
@@ -672,6 +688,7 @@ static STATIC_CATALOG: &[CatalogEntry] = &[
     BIRCH_SWINNERTON_DYER,
     HODGE_CONJECTURE,
     YANG_MILLS_MASS_GAP,
+    COLLATZ_CONJECTURE,
 ];
 
 // Query-relevant IG catalog subset for native `ask` (no Python host catalog).

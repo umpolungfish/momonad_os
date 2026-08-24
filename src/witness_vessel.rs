@@ -161,20 +161,20 @@ pub fn layer_verdict(gate_closed: bool, ceiling_ok: bool) -> B4 {
 // THE PAYLOADS — computed from canonical tuples, never hand-entered
 // ═══════════════════════════════════════════════════════════════
 
-/// The six MPP Witnesses that carry a machine-checked closure or
-/// resistance theorem (display name, catalog name). BSD, Hodge, and YM
-/// were the original three to ride the vessel. RH, NS, and PNP are added
-/// here for the first time: Clay_UnclosedResistance.lean proves they close
-/// under NONE of the 23 gate-universes in the Lean tree, but that theorem
-/// never ran through the boarding/read-back transport protocol below.
-/// This extension answers that open question rather than assuming it.
-pub const WITNESSES: [(&str, &str); 6] = [
+/// The seven Witnesses riding the vessel. BSD, Hodge, and YM were the
+/// original three. RH, NS, and PNP were added when their static
+/// Clay_UnclosedResistance.lean proof turned out to have never actually
+/// been run through boarding/read-back. Collatz is the first Witness with
+/// no Clay-tied theorem behind it at all, open-ended: nothing here
+/// predicts what its verdict should be, so it is boarded to find out.
+pub const WITNESSES: [(&str, &str); 7] = [
     ("BSD", "birch_swinnerton_dyer"),
     ("Hodge", "hodge_conjecture"),
     ("YM", "yang_mills_mass_gap"),
     ("RH", "riemann_hypothesis"),
     ("NS", "navier_stokes"),
     ("PNP", "p_vs_np"),
+    ("Collatz", "collatz_conjecture"),
 ];
 
 /// Closer-dialect index sets, matching Clay_WitnessedClosure.lean:
@@ -279,11 +279,12 @@ pub struct VesselRun {
     pub readback_ff: Vec<B4>,
     /// Verdicts recomputed AFTER read-back.
     pub after: Vec<B4>,
-    /// Lean-mirror six (BSD, Hodge, YM, RH, NS, PNP) before / after transport.
-    /// The first three carry a Lean-proven closer set; the last three use
-    /// the full-dialect closer test (see `all_closers`).
-    pub mirror_before: [B4; 6],
-    pub mirror_after: [B4; 6],
+    /// Lean-mirror seven (BSD, Hodge, YM, RH, NS, PNP, Collatz) before /
+    /// after transport. The first three carry a Lean-proven closer set;
+    /// RH/NS/PNP use the full-dialect closer test (see `all_closers`);
+    /// Collatz has no theorem behind it at all and uses the same full test.
+    pub mirror_before: [B4; 7],
+    pub mirror_after: [B4; 7],
     /// Frobenius harness over every boarding action.
     pub harness: FrobeniusHarness,
     /// ΔS: total mismatches across both substrates and the recompute.
@@ -309,6 +310,7 @@ pub fn run_vessel() -> Option<VesselRun> {
     let rh = crate::catalog::lookup(WITNESSES[3].1)?.tuple;
     let ns = crate::catalog::lookup(WITNESSES[4].1)?.tuple;
     let pnp = crate::catalog::lookup(WITNESSES[5].1)?.tuple;
+    let collatz = crate::catalog::lookup(WITNESSES[6].1)?.tuple;
     let all_c = all_closers();
     let mirror_before = [
         witness_verdict(&unis, &BSD_CLOSERS, &bsd),
@@ -317,6 +319,7 @@ pub fn run_vessel() -> Option<VesselRun> {
         witness_verdict(&unis, &all_c, &rh),
         witness_verdict(&unis, &all_c, &ns),
         witness_verdict(&unis, &all_c, &pnp),
+        witness_verdict(&unis, &all_c, &collatz),
     ];
 
     // 2. Board EVERYTHING through both substrates, frob_verify gating each
@@ -354,7 +357,7 @@ pub fn run_vessel() -> Option<VesselRun> {
         readback_vm.push(rb_vm);
         readback_ff.push(rb_ff);
     }
-    let mut mirror_after = [B4::N; 6];
+    let mut mirror_after = [B4::N; 7];
     for (i, &v) in mirror_before.iter().enumerate() {
         let (rb_vm, _) = board_one(v, &mut harness, &mut ds);
         mirror_after[i] = rb_vm;
@@ -446,7 +449,7 @@ pub fn vessel_report() -> String {
     s.push_str("  YM = B is the U10 dialetheia DERIVED: gate closed AND ceiling\n");
     s.push_str("  blocked (⊤). The Witness rides both arms: fsplit(B)=(T,F),\n");
     s.push_str("  ffuse(T,F)=B — b_cargo_mechanism, here executed, not asserted.\n\n");
-    for i in 3..6 {
+    for i in 3..WITNESSES.len() {
         let stable = run.mirror_after[i] == run.mirror_before[i];
         s.push_str(&format!(
             "  {:<6} verdict {} (no prior Lean mirror)  transport {} -> {}   [{}]\n",

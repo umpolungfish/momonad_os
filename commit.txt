@@ -1,17 +1,15 @@
-Fix the navier_stokes catalog entry: wrong tuple, six of twelve off
+Board Collatz: the first Witness outside the Clay seven
 
-STATIC_CATALOG's NAVIER_STOKES const was the pre-Clay-7 generic physics
-entry, not the canonical tuple ClayCanonicalTuples.lean actually uses. It
-agreed with the canonical tuple on only 6 of 12 primitives (top, rel,
-kin, gran, gram, phi all differed). Since STATIC_CATALOG entries are
-pushed into the lookup table before the ask-subset catalog and never
-deduped against each other, this stale entry silently won every
-lookup("navier_stokes") call, including the one the newly-extended
-witness vessel used yesterday.
+Added COLLATZ_CONJECTURE to STATIC_CATALOG, tuple sourced directly from
+IG_catalog.json's collatz_conjecture entry (confirmed to agree exactly
+with the pre-existing ask-subset duplicate, harmless collision). Extended
+WITNESSES to seven and wired Collatz through the same mirror check RH/NS/
+PNP use, full 88-dialect closer range, no assumed subset.
 
-Corrected the tuple to match ClayCanonicalTuples.navierStokes exactly,
-same provenance pattern as BIRCH_SWINNERTON_DYER/HODGE_CONJECTURE. Reran
-the vessel after the fix: the dialect-72 result reported for NS survives
-unchanged, same dialect index, transport still lossless at 1068/1068.
-One real change from the fix: NS's B-count in the wide sweep moved from
-2 to 0, everything else about its profile held.
+Result: Collatz mirror verdict N, transport-stable. In the wide sweep it
+returns exactly one B, at dialect 83, composition_scope (sequential
+composition, universal interaction range) - gate closes there but the
+dialect's own T-ceiling blocks it, same dialetheic shape Yang-Mills
+carries under triple_criticality, at a different dialect, for a different
+reason. Transport remains lossless across all seven witnesses: 1246
+boarding actions, 1246 closed, ΔS=0.
