@@ -1,13 +1,17 @@
-Board Goldbach: the widest dialetheic footprint checked so far
+Fix odd-perfect and board it: two existing entries were both wrong
 
-Added to WITNESSES (8 total), resolved from the existing goldbach_conjecture
-catalog entry, unambiguous, no duplicate to check against. Mirror verdict N
-(needs all 88 to close simultaneously and only one does), transport-stable.
+odd_perfect_number_conjecture and odd_perfect_conjecture, both already in
+the ask-subset catalog, carry phi := monad (critical). Neither can be
+the tuple the companion OVM paper describes as odd_perfect: no critical
+point, subcritical, no scale-free behavior. Sourced the correct tuple
+directly from the grounded, lean-verified ob3ect at
+ob3ect/digital/odd_perfect_number_theorem, phi := woe (subcritical),
+which matches. Added as ODD_PERFECT_NUMBER_THEOREM under the name
+odd_perfect_number_theorem so it doesn't collide with either wrong
+duplicate, and boarded it as the ninth witness.
 
-The wide sweep is the real finding: 65 of 88 dialects return B for Goldbach,
-against 12 for BSD/Hodge and 1 each for YM/RH/Collatz - by far the largest
-dialetheic footprint of any witness checked. Its single clean T closure
-sits at dialect 71, t_subset_th_omega (self-referential topology and
-integer winding together), the immediate neighbor of Navier-Stokes's
-dialect 72. Transport remains lossless across all eight: 1424 boarding
-actions, 1424 closed, ΔS=0.
+Result: mirror verdict F, transport-stable. In the wide sweep it is the
+first witness examined with zero T anywhere across all 88 dialects - not
+even the single edge-case closure Collatz, RH, or NS each found. Three B
+positions (17, 56, 61), mostly F elsewhere. Transport remains lossless:
+1602 boarding actions, 1602 closed, ΔS=0.

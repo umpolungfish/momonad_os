@@ -547,6 +547,24 @@ const COLLATZ_CONJECTURE: CatalogEntry = entry(
     1, Domain::Mathematics,
 );
 
+// ── Odd Perfect Number Theorem ──
+// Tuple sourced from ob3ect/digital/odd_perfect_number_theorem, a grounded,
+// lean-verified ob3ect (grounding_status: full). Two other names already
+// live in the ask-subset catalog, odd_perfect_number_conjecture and
+// odd_perfect_conjecture, and both carry phi := monad (critical) — which
+// contradicts the object's own subcriticality ("no known instance exists,
+// no scale-free critical behavior"). This entry's phi := woe is the one
+// that agrees with that description; the other two are drift, not kept
+// here, not to be trusted for this name.
+const ODD_PERFECT_NUMBER_THEOREM: CatalogEntry = entry(
+    "odd_perfect_number_theorem", "No odd integer equals the sum of its proper divisors",
+    IgPrim::if_, IgPrim::eat, IgPrim::ear,
+    IgPrim::or_, IgPrim::age, IgPrim::on,
+    IgPrim::thigh, IgPrim::vow,
+    IgPrim::woe, IgPrim::fee, IgPrim::up, IgPrim::awe,
+    3, Domain::Mathematics,
+);
+
 // ── Wave Equation (O₁) ──
 const WAVE_EQUATION: CatalogEntry = entry(
     "wave_equation", "Classical wave equation — reversible propagation",
@@ -689,6 +707,7 @@ static STATIC_CATALOG: &[CatalogEntry] = &[
     HODGE_CONJECTURE,
     YANG_MILLS_MASS_GAP,
     COLLATZ_CONJECTURE,
+    ODD_PERFECT_NUMBER_THEOREM,
 ];
 
 // Query-relevant IG catalog subset for native `ask` (no Python host catalog).
