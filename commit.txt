@@ -1,17 +1,9 @@
-Fix odd-perfect and board it: two existing entries were both wrong
+Fix the bare-metal build: f64::round() doesn't exist in no_std
 
-odd_perfect_number_conjecture and odd_perfect_conjecture, both already in
-the ask-subset catalog, carry phi := monad (critical). Neither can be
-the tuple the companion OVM paper describes as odd_perfect: no critical
-point, subcritical, no scale-free behavior. Sourced the correct tuple
-directly from the grounded, lean-verified ob3ect at
-ob3ect/digital/odd_perfect_number_theorem, phi := woe (subcritical),
-which matches. Added as ODD_PERFECT_NUMBER_THEOREM under the name
-odd_perfect_number_theorem so it doesn't collide with either wrong
-duplicate, and boarded it as the ninth witness.
-
-Result: mirror verdict F, transport-stable. In the wide sweep it is the
-first witness examined with zero T anywhere across all 88 dialects - not
-even the single edge-case closure Collatz, RH, or NS each found. Three B
-positions (17, 56, 61), mostly F elsewhere. Transport remains lossless:
-1602 boarding actions, 1602 closed, ΔS=0.
+period_finding_ecdlp.rs called the std-only f64::round() method, which
+doesn't exist without std and broke the real x86_64-unknown-none release
+and debug builds outright (the hosted feature build masked it, since it
+links against a full std). Every other float call in this crate goes
+through libm's free functions; switched this one to match. Verified
+clean across all three: bare-metal release, bare-metal debug, and the
+hosted build, zero warnings on all three.

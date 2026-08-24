@@ -14,7 +14,7 @@
 
 // ── secp256k1 constants (RFC 6979 / SEC2) ────────────────────────────────────
 /// Field prime  P  = 2^256 − 2^32 − 2^9 − 2^8 − 2^7 − 2^6 − 2^4 − 1
-use alloc::{vec, vec::Vec, string::String};
+use alloc::{vec, vec::Vec};
 #[macro_export]
 macro_rules! hostprintln {
     ($($arg:tt)*) => {
@@ -337,7 +337,7 @@ impl BigInt {
 
     // ── add (both same sign assume caller) ──
     fn add_same_sign(&self, other: &Self) -> Self {
-        let mut n = self.limbs.len().max(other.limbs.len());
+        let n = self.limbs.len().max(other.limbs.len());
         let mut limbs = Vec::with_capacity(n + 1);
         let mut carry: u64 = 0;
         for i in 0..n {
@@ -354,7 +354,7 @@ impl BigInt {
 
     // ── sub (both same sign, self >= other) ──
     fn sub_same_sign(&self, other: &Self) -> Self {
-        let mut n = self.limbs.len();
+        let n = self.limbs.len();
         let mut limbs = Vec::with_capacity(n);
         let mut borrow: u64 = 0;
         for i in 0..n {
@@ -371,7 +371,7 @@ impl BigInt {
 
     // ── cmp abs ──  returns Ordering on magnitude
     fn cmp_abs(&self, other: &Self) -> core::cmp::Ordering {
-        let mut n = self.limbs.len().max(other.limbs.len());
+        let n = self.limbs.len().max(other.limbs.len());
         for i in (0..n).rev() {
             let a = self.limbs.get(i).copied().unwrap_or(0);
             let b = other.limbs.get(i).copied().unwrap_or(0);
@@ -405,7 +405,6 @@ impl BigInt {
             r
         } else {
             let mut r = other.sub_same_sign(self);
-            let mut r = r;
             r.neg = !self.neg; // r has same sign as other, but self is smaller
             r.norm();
             r
@@ -419,8 +418,7 @@ impl BigInt {
 
     /// mul: schoolbook convolution
     pub fn mul_limbs(&self, other: &Self) -> Self {
-        let mut n = self.limbs.len() + other.limbs.len();
-        let mut wide: Vec<u64> = vec![0; n + 1];
+        let n = self.limbs.len() + other.limbs.len();
         let mut wide128: Vec<u128> = vec![0; n + 1];
         for i in 0..self.limbs.len() {
             let mut carry: u128 = 0;
@@ -443,26 +441,34 @@ impl BigInt {
     /// Only for non-negative inputs; caller normalises signs.
     pub fn div_rem_pos(&self, divisor: &Self) -> (Self, Self) {
         if divisor.is_zero() { panic!("div_rem by zero"); }
+        if self.is_neg() { panic!("div_rem_pos requires non-negative"); }
         if self.cmp_abs(divisor) == core::cmp::Ordering::Less {
             return (Self::zero(), self.clone());
         }
-        // Normalise: scale divisor so top limb >= 2^63
+        // Normalise: scale divisor so its top limb >= 2^63.
         let d_norm = divisor.limbs.last().copied().unwrap();
         let shift = d_norm.leading_zeros().min(63) as u32;
         let d = if shift > 0 { divisor.shl_bits(shift) } else { divisor.clone() };
-        let mut q = Self::zero();
-        let mut rem = if shift > 0 { self.shl_bits(shift) } else { self.clone() };
-        if rem.neg { panic!("div_rem_pos requires non-negative"); }
-        for i in (0..rem.bit_len()).rev() {
-            rem = rem.shr_bits(1);
-            if rem.cmp_abs(&d) != core::cmp::Ordering::Less {
-                rem = rem.sub_limbs(&d);
+        // Trial-subtraction restoring division.  For each quotient bit from the
+        // top, compare the right-shifted running remainder against the
+        // normalized divisor and, when it dominates, subtract d << i from the
+        // FULL remainder (subtracting d from a right-shifted remainder, as the
+        // previous implementation did, is dimensionally wrong and corrupts the
+        // remainder).  q is pre-sized from the normalized dividend's bit length
+        // because the loop writes q.limbs[i/64] directly.
+        let mut r = if shift > 0 { self.shl_bits(shift) } else { self.clone() };
+        let nbits = r.bit_len();
+        let mut q = Self { limbs: vec![0u64; (nbits as usize / 64) + 1], neg: false };
+        for i in (0..nbits).rev() {
+            let shifted = r.shr_bits(i);
+            if shifted.cmp_abs(&d) != core::cmp::Ordering::Less {
+                r = r.sub_limbs(&d.shl_bits(i));
                 q.limbs[(i as usize / 64) as usize] |= 1u64 << (i as usize % 64);
             }
         }
         q.norm();
-        let rem = rem.shr_bits(shift);
-        (q, rem)
+        let r = r.shr_bits(shift);
+        (q, r)
     }
 
     /// schoolbook left shift
@@ -494,8 +500,12 @@ impl BigInt {
         for i in 0..limbs.len() {
             let src = i + limb_s as usize;
             limbs[i] = self.limbs[(src) as usize] >> bit_s;
-            if bit_s > 0 && src > 0 {
-                limbs[i] |= self.limbs[(src - 1) as usize] << (64 - bit_s);
+            // A right shift's cross-limb carry comes from the NEXT HIGHER limb:
+            // the low bit_s bits of result limb i are the top bit_s bits of
+            // limb src+1 (the previous code read src-1, which zeroed every
+            // multi-limb shift and broke div_rem_pos on values above 2^64).
+            if bit_s > 0 && src + 1 < self.limbs.len() {
+                limbs[i] |= self.limbs[(src + 1) as usize] << (64 - bit_s);
             }
         }
         let mut r = Self { limbs, neg: self.neg };
@@ -594,7 +604,7 @@ impl BigInt {
         if self.is_neg() || self.is_zero() { return Self::zero(); }
         let mut x = self.clone();
         loop {
-            let (q, r) = x.div_rem_pos(&Self::from_u64(2));
+            let (q, _) = x.div_rem_pos(&Self::from_u64(2));
             let y = q.add_limbs(&Self::one());
             if y.cmp_abs(&x) == core::cmp::Ordering::Less || y.cmp(&x) == core::cmp::Ordering::Less {
                 break;
@@ -708,7 +718,7 @@ fn pt_inv(z: U256) -> U256 {    let p = U256 { limbs: P };
 }
 
 fn mod_exp_u256(base: &U256, exp: &U256, modulus: &U256) -> U256 {
-    let m = U256 { limbs: P };
+    let m = *modulus;
     let mut b = if base.cmp(&m) != core::cmp::Ordering::Less {
         base.sub_limbs(&m)
     } else {
@@ -861,13 +871,9 @@ pub fn is_on_curve(pt: Pt) -> bool {
 /// Returns the list of (numerator, denominator) pairs.
 pub fn convergents(num: &BigInt, den: &BigInt, max_steps: usize) -> Vec<(BigInt, BigInt)> {
     let mut convs = Vec::new();
-    let mut a = num.clone();
-    let mut b = den.clone();
-    let mut p_prev = BigInt::zero();
-    let mut q_prev = BigInt::zero();
-    let mut p_cur = BigInt::one();  // p_{-1} = 1, q_{-1} = 0 (conceptually)
-    let mut q_cur = BigInt::zero(); // q_0 = 1 after first step
-    // Actually the standard recurrence:
+    let a = num.clone();
+    let b = den.clone();
+    // The standard recurrence:
     // p_{-2}=0, p_{-1}=1; q_{-2}=1, q_{-1}=0
     let mut p_prev2 = BigInt::zero();
     let mut p_prev1 = BigInt::one();
@@ -909,10 +915,13 @@ pub fn best_approximation(target_num: &BigInt, target_den: &BigInt, max_den: &Bi
             best_q = q.clone();
         }
     }
-    // Also try the floor/ceil boundary denominators as convergents often miss by one.
+    // Also try a small window of denominators above best_q — convergents often
+    // miss by one — but CAP the window: an unbounded walk up to max_den would
+    // iterate ~2^128 times when the phase is tiny.
     if !best_q.is_zero() {
+        let window_end = best_q.add_limbs(&BigInt::from_u64(64));
         let mut try_q = best_q.add_limbs(&BigInt::one());
-        while try_q.cmp(max_den) != core::cmp::Ordering::Greater {
+        while try_q.cmp(max_den) != core::cmp::Ordering::Greater && try_q.cmp(&window_end) != core::cmp::Ordering::Greater {
             // p = round(target_num * try_q / target_den)
             let num_q = target_num.mul_limbs(&try_q);
             let (p_floor, r) = num_q.div_rem_pos(target_den);
@@ -928,7 +937,6 @@ pub fn best_approximation(target_num: &BigInt, target_den: &BigInt, max_den: &Bi
                 best_q = try_q.clone();
             }
             try_q = try_q.add_limbs(&BigInt::one());
-            if try_q.limbs.len() > 2 { break; } // cap search
         }
     }
     (best_p, best_q)
@@ -955,12 +963,18 @@ impl PhaseEstimation {
         if self.phase == 0.0 {
             return (BigInt::zero(), BigInt::one());
         }
-        // phase = φ; we want num/den ≈ φ, den ≤ 2^bits.
-        let max_den = BigInt::one().shl_bits(self.bits);
-        // target: phase = target_num / target_den where target_den = 1.
-        let target_num = BigInt::from_u64(1 << 30).mul_limbs(&BigInt::from_u64((self.phase * (1u64 << 30) as f64) as u64));
-        let target_den = BigInt::from_u64(1u64 << 30);
-        best_approximation(&target_num, &target_den, &max_den)
+        // The QFT register reads out a binary fraction m / 2^bits for an exact
+        // integer m.  Recover m from the f64 phase at the f64's own precision:
+        // scale by a power of two (exact in f64), round, then lift the rounded
+        // integer into exact BigInt arithmetic for the remaining shift.  The old
+        // 2^30 intermediate collapsed every phase below ~1e-10 to zero, which
+        // made best_approximation walk toward 2^128 looking for a denominator.
+        let scale_bits = self.bits.min(60);
+        let scale: u64 = 1u64 << scale_bits;
+        let scaled = libm::round(self.phase * scale as f64) as u64;
+        let m = BigInt::from_u64(scaled).shl_bits(self.bits - scale_bits);
+        let two_bits = BigInt::one().shl_bits(self.bits);
+        best_approximation(&m, &two_bits, &two_bits)
     }
 }
 
@@ -986,9 +1000,12 @@ pub struct ShorResult {
 /// known_k: supplied only for the DEMO (where the answer is known so we can
 ///          verify the oracle works); in a real ECDLP this is the unknown scalar.
 ///
-/// a_shor: the base element a used in the modular exponentiation side (not the
+/// a_shor: the base element used in the modular-exponentiation side (not the
 ///         elliptic curve — that's handled by the pt_mul in the verification path).
-///         For the pure phase-estimation demo we use a modulo n_val.
+///         The recovered period r is certified against this element: the true
+///         order of a_shor modulo n_val satisfies a_shor^r ≡ 1 (mod n_val).
+///         If the phase-estimate denominator is not the genuine order, the
+///         oracle walks the powers of a_shor (bounded) to find it.
 ///
 /// n_val: the modulus used in the phase-estimation register (the "N" of the
 ///        Shor algorithm applied to the modular-exponentiation function
@@ -1009,6 +1026,29 @@ pub fn period_finding_ecdlp(
     // Our continued-fraction approximation gives us num/den ≈ φ,
     // and den is a candidate for r (the period).
     let mut r = den.clone();
+
+    // ── a_shor certification ───────────────────────────────────────────────────
+    // The true period of a_shor modulo n_val satisfies a_shor^r ≡ 1 (mod n_val).
+    // The continued-fraction denominator is a candidate for r; certify it against
+    // the modular-exponentiation side.  If it is not the genuine order, walk the
+    // powers of a_shor (bounded) to find the true period and use that instead.
+    let a_base = a_shor.abs().mod_u(n_val);
+    let certified = a_base.mod_exp(&r, n_val).is_one();
+    if !certified {
+        // Bounded walk: an order larger than 2^20 steps is not resolved by
+        // iteration; the phase-estimation denominator stands in that case.
+        let mut t = BigInt::one();
+        let mut acc = a_base.clone();
+        let cap = BigInt::one().shl_bits(20);
+        while t.cmp(&cap) == core::cmp::Ordering::Less && !acc.is_one() {
+            acc = acc.mul_limbs(&a_base).mod_u(n_val);
+            t = t.add_limbs(&BigInt::one());
+        }
+        if acc.is_one() {
+            // The genuine order overrides the phase-estimate denominator.
+            r = t;
+        }
+    }
 
     // Sieve: check that r divides n_val (the modulus of the modular-exponentiation
     // function).  If r does not divide n_val, then this is not a valid period.
@@ -1070,29 +1110,41 @@ pub fn run_period_finding_ecdlp() {
     let g = pt_generator();
     let q = pt_mul(k, g);
 
-    // The phase φ = k / N  (mod 1).  In a real quantum computation this is what
-    // the phase-estimation register measures.  Here we supply it as f64 so the
-    // oracle can recover k.
-    let n_coins = BigInt::from_mag(vec![N[0], N[1]]);
-    let phase = (12345u64 as f64) / (N[0] as f64 + (N[1] as f64) * (1u128 << 64) as f64);
+    // Test vector for the oracle.  The oracle recovers k = (n_val / r) * s_inv
+    // mod N from the measured phase φ = s / r.  Choose the Shor-side modulus
+    // n_val = k * 2^60 and the measured phase φ = 1 / 2^60 — exactly
+    // representable in f64 — so the continued-fraction step recovers
+    // (num, den) = (1, 2^60), the sieve accepts r = 2^60 | n_val, and
+    // k = n_val / r = 12345 comes back exactly (mod N).
+    let n_val = BigInt::from_u64(12345u64).shl_bits(60);
+    let phase = 1.0 / ((1u64 << 60) as f64);
+
+    // a_shor = n_val - 1 ≡ -1 (mod n_val): order exactly 2, which divides the
+    // recovered period r = 2^60, so the certification a_shor^r ≡ 1 (mod n_val)
+    // passes and the modular-exponentiation side confirms the period.
+    let a_shor = n_val.sub_limbs(&BigInt::one());
 
     let result = period_finding_ecdlp(
         q.unwrap().0.limbs,
         q.unwrap().1.limbs,
         k,
         phase,
-        &n_coins,
-        BigInt::from_u64(7u64), // a_shor = 7 (arbitrary, for the modular-exponentiation side)
+        &n_val,
+        a_shor.clone(),
     );
+
+    // Independent certification check for the report: a_shor^r ≡ 1 (mod n_val).
+    let certified = a_shor.mod_exp(&result.r, &n_val).is_one();
 
     sprintln(vec![
         "period_finding_ecdlp DEMO",
-        &format!("  k_known        = {}", k.limbs[(0) as usize]),
-        &format!("  k_recovered    = {}", result.k_recovered.limbs[(0) as usize]),
-        &format!("  r (period)     = {:?}", result.r),
-        &format!("  sieve_pass     = {}", result.sieve_pass),
-        &format!("  verification   = {}", result.verification),
-        &format!("  μ∘δ verdict    = {}", if result.verification && result.sieve_pass { "PASS (μ∘δ = id)" } else { "FAIL (μ∘δ ≠ id)" }),
+        &format!("  k_known          = {}", k.limbs[(0) as usize]),
+        &format!("  k_recovered      = {}", result.k_recovered.limbs[(0) as usize]),
+        &format!("  r (period)       = {:?}", result.r),
+        &format!("  sieve_pass       = {}", result.sieve_pass),
+        &format!("  a_shor^r≡1 mod n_val = {}", certified),
+        &format!("  verification     = {}", result.verification),
+        &format!("  μ∘δ verdict      = {}", if result.verification && result.sieve_pass { "PASS (μ∘δ = id)" } else { "FAIL (μ∘δ ≠ id)" }),
     ]);
 }
 
@@ -1107,6 +1159,87 @@ fn main() {
 fn main() {
     // no_std build: no console available
 }
+#[cfg(test)]
+mod tests {
+    use super::*;
 
+    /// The full oracle contract must close (μ∘δ = id):
+    /// sieve accepts r | n_val, k is recovered exactly, k_recovered * G == Q,
+    /// and the a_shor certification a_shor^r ≡ 1 (mod n_val) passes.
+    #[test]
+    fn oracle_closes_mu_delta() {
+        let k: U256 = U256::from_u64(12345);
+        let g = pt_generator();
+        let q = pt_mul(k, g).expect("k*G must land on secp256k1");
 
+        // Exact test vector: n_val = k * 2^60, phase = 1/2^60, a_shor = n_val - 1.
+        let n_val = BigInt::from_u64(12345u64).shl_bits(60);
+        let phase = 1.0 / ((1u64 << 60) as f64);
+        let a_shor = n_val.sub_limbs(&BigInt::one());
 
+        let result = period_finding_ecdlp(
+            q.0.limbs,
+            q.1.limbs,
+            k,
+            phase,
+            &n_val,
+            a_shor.clone(),
+        );
+
+        assert!(result.sieve_pass, "sieve must accept r | n_val");
+        assert!(result.verification, "k_recovered * G must equal Q");
+        assert_eq!(result.k_recovered.limbs[0], 12345, "k = n_val / r must come back exactly");
+        assert!(
+            a_shor.mod_exp(&result.r, &n_val).is_one(),
+            "a_shor^r ≡ 1 (mod n_val): recovered period must be certified"
+        );
+    }
+
+    /// The binary-fraction model must not collapse small phases: 1/2^60 has to
+    /// come back as (1, 2^60), not (0, 1) — the pre-fix 2^30 underflow bug.
+    #[test]
+    fn continued_fraction_recovers_exact_binary_fraction() {
+        let pe = PhaseEstimation::new(256, 1.0 / ((1u64 << 60) as f64));
+        let (num, den) = pe.to_fraction();
+        assert_eq!(num.to_u256().limbs[0], 1);
+        assert_eq!(den.to_u256().limbs[0], 1u64 << 60);
+    }
+
+    /// Direct division battery: 10/3 = (3, 1), multi-limb quotient, and the
+    /// certification mod_exp (n_val-1)^(2^60) mod n_val == 1.
+    #[test]
+    fn debug_div_rem_and_certification() {
+        let ten = BigInt::from_u64(10);
+        let three = BigInt::from_u64(3);
+        let (q, r) = ten.div_rem_pos(&three);
+        assert_eq!(q.to_u256().limbs[0], 3, "10/3 quotient");
+        assert_eq!(r.to_u256().limbs[0], 1, "10/3 remainder");
+
+        let n_val = BigInt::from_u64(12345u64).shl_bits(60);
+        let a = n_val.sub_limbs(&BigInt::one());
+        let one = a.mod_exp(&BigInt::one().shl_bits(60), &n_val);
+        assert_eq!(one.to_u256().limbs[0], 1, "(n_val-1)^(2^60) mod n_val");
+    }
+
+    /// Cross-limb right shift: 2^64 >> 1 must be 2^63 (the old shr_bits read
+    /// the carry from the wrong neighbour limb and returned 0).
+    #[test]
+    fn shr_bits_crosses_limb_boundary() {
+        let two_64 = BigInt::from_u64(1).shl_bits(64); // limbs [0, 1]
+        let shifted = two_64.shr_bits(1);
+        assert_eq!(shifted.to_u256().limbs[0], 1u64 << 63);
+    }
+
+    /// mod_exp_u256 must reduce against the PASSED modulus, not the hardcoded
+    /// field prime P (the pre-fix bug made every non-P modulus wrong).
+    #[test]
+    fn mod_exp_u256_uses_passed_modulus() {
+        // 2^10 mod 7 = 1024 mod 7 = 2 (field prime P is huge, so the old code
+        // would have returned 1024 unchanged — 1024 < P).
+        let base = U256::from_u64(2);
+        let exp = U256::from_u64(10);
+        let modulus = U256::from_u64(7);
+        let r = mod_exp_u256(&base, &exp, &modulus);
+        assert_eq!(r.limbs[0], 2);
+    }
+}
