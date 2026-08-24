@@ -468,14 +468,23 @@ const HEAT_DIFFUSION: CatalogEntry = entry(
     1, Domain::Physics,
 );
 
-// ── Navier-Stokes (O₁) ──
+// ── Navier-Stokes (O₂†) ──
+// Tuple corrected to the canonical Clay tuple sourced from
+// ClayCanonicalTuples.lean (p4rakernel/p4ramill), which is itself
+// procedurally generated from IG_catalog.json — NOT the generic physics
+// entry this const held before, which agreed with the canonical tuple on
+// only 6 of 12 primitives (top, rel, kin, gran, gram, phi all differed).
+// Same class of drift the BIRCH_SWINNERTON_DYER comment above already
+// warned about; this is where it was found live, in the extended
+// witness-vessel run of 2026-08-24, and fixed at the source rather than
+// worked around downstream.
 const NAVIER_STOKES: CatalogEntry = entry(
-    "navier_stokes", "Fluid dynamics — Navier-Stokes equations",
-    IgPrim::array, IgPrim::mime, IgPrim::ian,
-    IgPrim::church, IgPrim::age, IgPrim::yea,
-    IgPrim::thigh, IgPrim::measure,
-    IgPrim::haha, IgPrim::kick, IgPrim::up, IgPrim::awe,
-    1, Domain::Physics,
+    "navier_stokes", "Clay Millennium Problem — Navier-Stokes global regularity",
+    IgPrim::array, IgPrim::judge, IgPrim::ear,
+    IgPrim::church, IgPrim::age, IgPrim::loll,
+    IgPrim::ice, IgPrim::vow,
+    IgPrim::monad, IgPrim::kick, IgPrim::up, IgPrim::awe,
+    3, Domain::Mathematics,
 );
 
 // ── Birch–Swinnerton-Dyer Conjecture (O₂†) ──

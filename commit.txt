@@ -1,19 +1,17 @@
-Extend the witness vessel to board RH, NS, and PNP
+Fix the navier_stokes catalog entry: wrong tuple, six of twelve off
 
-WITNESSES was three entries, BSD/Hodge/YM, the only three that ever rode
-the boarding/read-back transport protocol. RH/NS/PNP had a Lean-proven
-resistance theorem (close under none of 23 dialects) but that theorem
-never ran through this transport at all, so the claim that transport was
-confirmed for "every one of these verdicts" was wrong for half of them.
+STATIC_CATALOG's NAVIER_STOKES const was the pre-Clay-7 generic physics
+entry, not the canonical tuple ClayCanonicalTuples.lean actually uses. It
+agreed with the canonical tuple on only 6 of 12 primitives (top, rel,
+kin, gran, gram, phi all differed). Since STATIC_CATALOG entries are
+pushed into the lookup table before the ask-subset catalog and never
+deduped against each other, this stale entry silently won every
+lookup("navier_stokes") call, including the one the newly-extended
+witness vessel used yesterday.
 
-Extended to six. RH/NS/PNP have no Lean-proven closer subset, so their
-mirror check uses the full 88-dialect closer range instead of a named few
-(all_closers) rather than assuming an unproven subset. Run: 1068 boarding
-actions, 1068 Frobenius-closed, ΔS=0, lossless across all six.
-
-The wide 88-dialect sweep turned up something new: RH and PNP score zero T
-across all 88, agreeing with and extending the resistance theorem past
-what it actually covers. Navier-Stokes does not — it closes fully under
-dialect 72, t_subset_d_sigma, an expansion dialect outside the 23 the Lean
-proof runs over. Not a contradiction of that theorem, a fact about the
-wider space the theorem never spoke to.
+Corrected the tuple to match ClayCanonicalTuples.navierStokes exactly,
+same provenance pattern as BIRCH_SWINNERTON_DYER/HODGE_CONJECTURE. Reran
+the vessel after the fix: the dialect-72 result reported for NS survives
+unchanged, same dialect index, transport still lossless at 1068/1068.
+One real change from the fix: NS's B-count in the wide sweep moved from
+2 to 0, everything else about its profile held.
