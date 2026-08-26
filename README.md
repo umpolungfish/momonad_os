@@ -81,6 +81,12 @@ All 20 modules from `red-hot_rebis/` and `gene_imscriber/` run as no_std Rust of
 
 The kernel can navigate between 12 dialects with different structural rulesets, gate thresholds, and absorption rules. The Crystal is invariant; the ruleset is a sheaf that determines what each address *does*. Eleven diaschizic compounds modulate gate thresholds and T-constitution at load time.
 
+### Real x86 Execution  
+
+`vox run <symbol> --args a,b <file>` lifts a function out of a real ELF binary and runs it, for real: `vox_core::imasm_module::emit` produces the payload-carrying twelve-glyph module (each glyph plus its actual registers, immediates, and memory operands, not just the bare structural word `weight`/`banked`/`cycle`/`imasm derive` read), and `vox_core::imasm_vm::Machine` interprets it with genuine registers, byte-addressed memory, flags, and ALU semantics — System V calling convention in, a real computed value out. Verified byte-for-byte against the standalone `vox` binary on a compiled `add(a,b)` function.
+
+This runs one function at a time with scalar integer arguments and a single integer return, not a full process: `exit`/`exit_group` are the only real syscalls, every other syscall halts rather than pretending to succeed, and there is no dynamic linker, no `main`/argv/envp setup, no threads. Hosted builds only — it needs a filesystem to read the binary from.
+
 ---
 
 ## Usage
@@ -111,6 +117,8 @@ clay             → Clay Millennium status
 triple           → von Neumann superoperator algebra
 ruleset          → Cross-dialect navigation
 fibqc            → Topological quantum computer
+vox run <sym> --args a,b <file>
+                 → real x86 execution over the twelve-glyph module
 ```
 
 ---

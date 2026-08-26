@@ -5992,6 +5992,21 @@ fn vox_run_symbol(args: &[alloc::string::String]) {
         Err(crate::imasm_exec::Stop::SysExit(c)) => sprintln!("{}(...) called exit({})   [{} steps in the twelve]", sym, c, m.steps),
         Err(crate::imasm_exec::Stop::Halt(e)) => sprintln!("{}(...) halted: {}   [{} steps]", sym, e, m.steps),
     }
+    // The execution above reads the payload-carrying module (real operands).
+    // What weight/banked/cycle/imasm-derive read is the bare structural word
+    // for the same function — the other half of the same object, not a
+    // separate lookup. `words()` groups by function via the same descent walk
+    // `vox word`/`vox lift` already use, so the line for this address is the
+    // identical word those instruments would see.
+    let target = alloc::format!("0x{:x}\t", addr);
+    let bare = crate::imasm_exec::words(&raw);
+    if let Some(line) = bare.lines().find(|l| l.starts_with(&target)) {
+        if let Some(word) = line.split('\t').nth(1) {
+            let glyphs: alloc::vec::Vec<char> = word.chars().collect();
+            sprintln!("structure word (feed to weight/banked/cycle/imasm derive):");
+            sprintln!("  {}   verdict {}", word, crate::vox::verdict(&glyphs));
+        }
+    }
 }
 
 #[cfg(not(feature = "hosted"))]
