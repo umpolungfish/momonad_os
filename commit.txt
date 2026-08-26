@@ -1,12 +1,5 @@
-Fix fib() off-by-one, canonicalize factor order, add retry-case test
+I gave vox run in mOMonadOS the same two capabilities I just added to the standalone Vox binary: running a saved .imasm module directly, and falling back to a binary's own entry point when no symbol is given.
 
-fib(m) was indexing one off from the kernel's own stated convention
-(F_1=1, F_2=1); corrected so 7/15/19 strands land on F_6=8, F_14=377,
-F_18=2584 as documented. factors_from_period now returns the smaller
-factor first rather than whichever gcd came out first. Added the two
-Carrier16 labels that were missing (T, F). Split the old shor_n21_a5 test
-into a correctly-named a=2 case and a new retry-case test covering the
-standard Shor a^(r/2) ≡ -1 mod N situation, where no factor is found and
-the result says so rather than guessing. menu.rs's shor entry updated to
-describe the dialetheic subcommand this enables. Already covered by the
-full test run: all 244 tests pass with these changes in place.
+A .imasm file now carries its own symbol table, so vox run reads it as text and resolves symbols from that table with no second read of the original binary. And since a PE loader never builds a symbol table at all, a bare vox run <file> with no symbol now runs from the module's own entry point instead of demanding a name that a .exe can never supply.
+
+Verified inside mOMonadOS's own REPL against a minimal static ELF whose _start calls exit(42) directly: entry(...) called exit(42) in 5 steps, matching the standalone Vox binary's result exactly. Full suite still at 262 passed, 0 failed.

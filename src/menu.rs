@@ -147,7 +147,7 @@ pub static KERNEL_MENU: &[MenuItem] = &[
     MenuItem { name: "ruleset", cmd: "ruleset", desc: "show the active ruleset", example: "ruleset", submenu: None },
     MenuItem { name: "absorption", cmd: "absorption", desc: "list all absorption rules", example: "absorption", submenu: None },
     MenuItem { name: "replicative", cmd: "replicative", desc: "load the program targeting O_inf_dag (R2) deliberately", example: "replicative", submenu: None },
-    MenuItem { name: "vox",        cmd: "vox",        desc: "Control-flow closure auditor: verdict <word> | evm <hex> | wasm <hex> | classify <mn> | run <sym> <file> — real x86 execution over the twelve-glyph module, one function, scalar int args, exit() is the only real syscall", example: "vox run add --args 3,4 ./libtest.so", submenu: None },
+    MenuItem { name: "vox",        cmd: "vox",        desc: "Control-flow closure auditor: verdict <word> | evm <hex> | wasm <hex> | classify <mn> | run [sym] <file> — real x86 execution over the twelve-glyph module; no symbol given runs the file's own entry point (the only address a PE/.exe offers, since it has no symbol table). One function, scalar int args, exit() is the only real syscall", example: "vox run add --args 3,4 ./libtest.so", submenu: None },
     MenuItem { name: "quit", cmd: "quit", desc: "halt the kernel (aliases exit, halt)", example: "quit", submenu: None },
 ];
 

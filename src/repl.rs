@@ -339,13 +339,18 @@ pub fn repl(k: &mut Kernel) {
                     sprintln!("vox rna <seq> [code] — lift a coding sequence; code is");
                     sprintln!("                       standard or mitochondrial");
                     sprintln!("vox peptide <seq>    — lift a residue sequence");
-                    sprintln!("vox run <sym> --args a,b <file>");
+                    sprintln!("vox run [sym] --args a,b <file>");
                     sprintln!("                     — recompile a function to the payload-");
                     sprintln!("                       carrying twelve-glyph module and RUN it:");
-                    sprintln!("                       real registers, memory, flags, ALU. Only");
-                    sprintln!("                       exit()/exit_group() syscalls are real; any");
-                    sprintln!("                       other syscall halts. One function, scalar");
-                    sprintln!("                       int args/return, hosted builds only.");
+                    sprintln!("                       real registers, memory, flags, ALU. No");
+                    sprintln!("                       symbol given runs the file's own entry");
+                    sprintln!("                       point instead — the only address a PE");
+                    sprintln!("                       binary offers, since the loader never");
+                    sprintln!("                       reads a symbol table for that format.");
+                    sprintln!("                       Only exit()/exit_group() syscalls are");
+                    sprintln!("                       real; any other syscall halts. One");
+                    sprintln!("                       function, scalar int args/return, hosted");
+                    sprintln!("                       builds only.");
                     sprintln!("A word closes at T, carries an open fork at B, and runs clean");
                     sprintln!("and linear at N. The fork is what the verdict is looking for.");
                 } else {
@@ -5932,9 +5937,13 @@ fn vox_lift_file(_path: &str) {
 /// than pretending to succeed.
 #[cfg(feature = "hosted")]
 fn vox_run_symbol(args: &[alloc::string::String]) {
-    let mut sym = alloc::string::String::new();
+    // A single bare token is the FILE, not the symbol: with no name given,
+    // the entry point is what runs. This is the only address a PE binary
+    // offers at all — the loader never populates a symbol table for PE (only
+    // ELF has one to read), so a GUI .exe with no exports has no symbol name
+    // that could ever resolve, whatever you type.
+    let mut bare: alloc::vec::Vec<alloc::string::String> = alloc::vec::Vec::new();
     let mut argv: alloc::vec::Vec<i64> = alloc::vec::Vec::new();
-    let mut file = alloc::string::String::new();
     let mut i = 0;
     while i < args.len() {
         match args[i].as_str() {
@@ -5954,57 +5963,82 @@ fn vox_run_symbol(args: &[alloc::string::String]) {
                     }
                 }
             }
-            other => {
-                if sym.is_empty() {
-                    sym = other.to_string();
-                } else {
-                    file = other.to_string();
-                }
-            }
+            other => bare.push(other.to_string()),
         }
         i += 1;
     }
-    if sym.is_empty() || file.is_empty() {
-        sprintln!("vox run <symbol> --args a,b <file>");
+    let (sym, file) = match bare.len() {
+        0 => {
+            sprintln!("vox run [symbol] --args a,b <file>");
+            return;
+        }
+        1 => (alloc::string::String::new(), bare[0].clone()),
+        _ => (bare[0].clone(), bare[1..].join(" ")),
+    };
+    if file.is_empty() {
+        sprintln!("vox run [symbol] --args a,b <file>");
         return;
     }
-    let raw = match std::fs::read(&file) {
-        Ok(r) => r,
-        Err(e) => {
-            sprintln!("cannot read {}: {}", file, e);
-            return;
+    // A `.imasm` file is a saved module: text, already carrying its own
+    // symbol table (`; sym NAME 0xADDR`), so it runs directly with no second
+    // read of the original binary. Anything else is read as raw bytes and
+    // lifted fresh — same as `vox imasm`/`vox run` in the standalone binary.
+    let raw_for_words = std::fs::read(&file).ok();
+    let is_module = file.ends_with(".imasm")
+        || raw_for_words.as_deref().map(|b| b.starts_with(b"; ")).unwrap_or(false);
+    let mut m = if is_module {
+        match std::fs::read_to_string(&file) {
+            Ok(text) => crate::imasm_exec::Machine::new(&text),
+            Err(e) => {
+                sprintln!("cannot read {}: {}", file, e);
+                return;
+            }
+        }
+    } else {
+        let raw = match &raw_for_words {
+            Some(r) => r,
+            None => {
+                sprintln!("cannot read {}", file);
+                return;
+            }
+        };
+        crate::imasm_exec::Machine::new(&crate::imasm_exec::emit(raw))
+    };
+    let (addr, label) = if sym.is_empty() {
+        (m.entry, alloc::string::String::from("entry"))
+    } else {
+        match m.resolve(&sym) {
+            Some(a) => (a, sym.clone()),
+            None => {
+                sprintln!("no symbol '{}' in {}", sym, file);
+                return;
+            }
         }
     };
-    let syms = crate::imasm_exec::symbols(&raw);
-    let addr = match syms.get(&sym) {
-        Some(a) => *a,
-        None => {
-            sprintln!("no symbol '{}' in {}", sym, file);
-            return;
-        }
-    };
-    let module = crate::imasm_exec::emit(&raw);
-    let mut m = crate::imasm_exec::Machine::new(&module);
     let argv_str: alloc::vec::Vec<alloc::string::String> =
         argv.iter().map(|a| a.to_string()).collect();
     match m.call(addr, &argv, 50_000_000) {
-        Ok(r) => sprintln!("{}({}) = {}   [{} steps in the twelve]", sym, argv_str.join(", "), r, m.steps),
-        Err(crate::imasm_exec::Stop::SysExit(c)) => sprintln!("{}(...) called exit({})   [{} steps in the twelve]", sym, c, m.steps),
-        Err(crate::imasm_exec::Stop::Halt(e)) => sprintln!("{}(...) halted: {}   [{} steps]", sym, e, m.steps),
+        Ok(r) => sprintln!("{}({}) = {}   [{} steps in the twelve]", label, argv_str.join(", "), r, m.steps),
+        Err(crate::imasm_exec::Stop::SysExit(c)) => sprintln!("{}(...) called exit({})   [{} steps in the twelve]", label, c, m.steps),
+        Err(crate::imasm_exec::Stop::Halt(e)) => sprintln!("{}(...) halted: {}   [{} steps]", label, e, m.steps),
     }
     // The execution above reads the payload-carrying module (real operands).
     // What weight/banked/cycle/imasm-derive read is the bare structural word
     // for the same function — the other half of the same object, not a
-    // separate lookup. `words()` groups by function via the same descent walk
-    // `vox word`/`vox lift` already use, so the line for this address is the
-    // identical word those instruments would see.
-    let target = alloc::format!("0x{:x}\t", addr);
-    let bare = crate::imasm_exec::words(&raw);
-    if let Some(line) = bare.lines().find(|l| l.starts_with(&target)) {
-        if let Some(word) = line.split('\t').nth(1) {
-            let glyphs: alloc::vec::Vec<char> = word.chars().collect();
-            sprintln!("structure word (feed to weight/banked/cycle/imasm derive):");
-            sprintln!("  {}   verdict {}", word, crate::vox::verdict(&glyphs));
+    // separate lookup. `words()` needs the raw x86 bytes to walk (a saved
+    // `.imasm` file no longer carries those), so this half only runs when a
+    // real binary was given.
+    if !is_module {
+        if let Some(raw) = &raw_for_words {
+            let target = alloc::format!("0x{:x}\t", addr);
+            let bare = crate::imasm_exec::words(raw);
+            if let Some(line) = bare.lines().find(|l| l.starts_with(&target)) {
+                if let Some(word) = line.split('\t').nth(1) {
+                    let glyphs: alloc::vec::Vec<char> = word.chars().collect();
+                    sprintln!("structure word (feed to weight/banked/cycle/imasm derive):");
+                    sprintln!("  {}   verdict {}", word, crate::vox::verdict(&glyphs));
+                }
+            }
         }
     }
 }
