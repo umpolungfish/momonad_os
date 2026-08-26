@@ -136,6 +136,7 @@ mod iuft_qc;
 mod iuft_teichmuller;
 mod vox;
 mod vox_decode;
+mod imasm_exec;
 mod circuit;
 
 // ── m3iosis tool ports (native Rust implementations) ────────

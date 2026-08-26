@@ -339,6 +339,13 @@ pub fn repl(k: &mut Kernel) {
                     sprintln!("vox rna <seq> [code] — lift a coding sequence; code is");
                     sprintln!("                       standard or mitochondrial");
                     sprintln!("vox peptide <seq>    — lift a residue sequence");
+                    sprintln!("vox run <sym> --args a,b <file>");
+                    sprintln!("                     — recompile a function to the payload-");
+                    sprintln!("                       carrying twelve-glyph module and RUN it:");
+                    sprintln!("                       real registers, memory, flags, ALU. Only");
+                    sprintln!("                       exit()/exit_group() syscalls are real; any");
+                    sprintln!("                       other syscall halts. One function, scalar");
+                    sprintln!("                       int args/return, hosted builds only.");
                     sprintln!("A word closes at T, carries an open fork at B, and runs clean");
                     sprintln!("and linear at N. The fork is what the verdict is looking for.");
                 } else {
@@ -403,6 +410,7 @@ pub fn repl(k: &mut Kernel) {
                                 sprintln!("vox classify <mnemonic> [operands]");
                             }
                         }
+                        "run" => vox_run_symbol(&rest[1..]),
                         other => sprintln!("vox has no `{}`; try `vox help`", other),
                     }
                 }
@@ -1272,15 +1280,22 @@ pub fn repl(k: &mut Kernel) {
                 }
             }
             "btc_oneshot" => {
-                let arg = parts.next().unwrap_or("");
-                if arg.is_empty() || arg == "help" {
+                let sub = parts.next().unwrap_or("");
+                let pk_hex = parts.next().unwrap_or("");
+                if sub.is_empty() || sub == "help" {
                     sprintln!("btc_oneshot — BTC Secret Key Oneshot Operator");
                     sprintln!("  btc_oneshot verify    — full structural verification suite");
                     sprintln!("  btc_oneshot steps     — 12 operational phase steps");
                     sprintln!("  btc_oneshot tuple     — print grammar tuple");
                     sprintln!("  btc_oneshot word      — print IMASM word");
+                    sprintln!("  btc_oneshot extract   — extract private key from compressed pubkey");
                 } else {
-                    sprintln!("{}", crate::btc_secret_key_oneshot::btc_oneshot_repl(&[arg]));
+                    let args: Vec<&str> = if pk_hex.is_empty() {
+                        vec![sub]
+                    } else {
+                        vec![sub, pk_hex]
+                    };
+                    sprintln!("{}", crate::btc_secret_key_oneshot::btc_oneshot_repl(&args));
                 }
             }
             "rh" => print_rh(),
@@ -5906,4 +5921,80 @@ fn vox_lift_file(path: &str) {
 #[cfg(not(feature = "hosted"))]
 fn vox_lift_file(_path: &str) {
     sprintln!("vox lift needs a host filesystem; not available in the kernel build");
+}
+
+/// `vox run <symbol> --args a,b <file>` — order-tolerant, mirroring the
+/// standalone `vox` binary's own CLI parser exactly (Vox/src/main.rs). Lifts
+/// the file to the payload-carrying twelve-glyph module (`imasm_exec::emit`,
+/// not the bare-glyph `vox lift`/`imasm derive` form) and actually runs the
+/// named function through it: real registers, memory, flags, ALU. Only
+/// exit()/exit_group() syscalls do anything; every other syscall halts rather
+/// than pretending to succeed.
+#[cfg(feature = "hosted")]
+fn vox_run_symbol(args: &[alloc::string::String]) {
+    let mut sym = alloc::string::String::new();
+    let mut argv: alloc::vec::Vec<i64> = alloc::vec::Vec::new();
+    let mut file = alloc::string::String::new();
+    let mut i = 0;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--args" => {
+                i += 1;
+                if i < args.len() {
+                    for a in args[i].split(',') {
+                        let a = a.trim();
+                        if !a.is_empty() {
+                            let v = if let Some(h) = a.strip_prefix("0x") {
+                                i64::from_str_radix(h, 16).unwrap_or(0)
+                            } else {
+                                a.parse().unwrap_or(0)
+                            };
+                            argv.push(v);
+                        }
+                    }
+                }
+            }
+            other => {
+                if sym.is_empty() {
+                    sym = other.to_string();
+                } else {
+                    file = other.to_string();
+                }
+            }
+        }
+        i += 1;
+    }
+    if sym.is_empty() || file.is_empty() {
+        sprintln!("vox run <symbol> --args a,b <file>");
+        return;
+    }
+    let raw = match std::fs::read(&file) {
+        Ok(r) => r,
+        Err(e) => {
+            sprintln!("cannot read {}: {}", file, e);
+            return;
+        }
+    };
+    let syms = crate::imasm_exec::symbols(&raw);
+    let addr = match syms.get(&sym) {
+        Some(a) => *a,
+        None => {
+            sprintln!("no symbol '{}' in {}", sym, file);
+            return;
+        }
+    };
+    let module = crate::imasm_exec::emit(&raw);
+    let mut m = crate::imasm_exec::Machine::new(&module);
+    let argv_str: alloc::vec::Vec<alloc::string::String> =
+        argv.iter().map(|a| a.to_string()).collect();
+    match m.call(addr, &argv, 50_000_000) {
+        Ok(r) => sprintln!("{}({}) = {}   [{} steps in the twelve]", sym, argv_str.join(", "), r, m.steps),
+        Err(crate::imasm_exec::Stop::SysExit(c)) => sprintln!("{}(...) called exit({})   [{} steps in the twelve]", sym, c, m.steps),
+        Err(crate::imasm_exec::Stop::Halt(e)) => sprintln!("{}(...) halted: {}   [{} steps]", sym, e, m.steps),
+    }
+}
+
+#[cfg(not(feature = "hosted"))]
+fn vox_run_symbol(_args: &[alloc::string::String]) {
+    sprintln!("vox run needs a host filesystem; not available in the kernel build");
 }
