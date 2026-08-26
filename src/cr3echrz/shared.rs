@@ -145,7 +145,7 @@ pub fn opcode_grammar(op: Opcode) -> GrammarPrim {
         Opcode::ARev    => GrammarPrim { symbol: "\u{1046C}", latin: "≺", desc: "Parity" },
         Opcode::CLink   => GrammarPrim { symbol: "\u{10471}", latin: "⋈", desc: "Kinetics" },
         Opcode::ImScrib => GrammarPrim { symbol: "\u{10460}", latin: "∋", desc: "Composition" },
-        Opcode::IFix    => GrammarPrim { symbol: "\u{1046D}", latin: "◻", desc: "Winding" },
+        Opcode::IFix    => GrammarPrim { symbol: "\u{1046D}", latin: "⊡", desc: "Winding" },
     }
 }
 

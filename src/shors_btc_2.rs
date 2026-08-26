@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 //! shors_btc_2.rs — Bitcoin Private Key Extraction via MoDoT Alchemy Pipeline (256-bit)
 //! Pipeline: sic_povm_d2048_fiducial → CLINK L8 → horn_torus_winding_kernel
-//! Grammar computation: ⊢⊙⋈∈≻⊤≺⊥∋⊞◻⊣
+//! Grammar computation: ⊢⊙⋈∈≻⊤≺⊥∋⊞⊡⊣
 //! Winding principle: horn torus bridge (R=r, d=12, 16 sectors, tilt=arctan(1/4))
 //! 3 evaluators at sectors [0, 5, 11], 13 non-evaluators
 //! Full 256-bit MoDoT alchemy: PK → SIC moduli → CLINK L8 → Horn Torus → Private Key
@@ -37,7 +37,7 @@ fn real_shor_params() -> ShorCircuitParams {
     ShorCircuitParams::new(n_qubits, order_bitlen, 0)
 }
 
-/// The Grammar computation: ⊢⊙⋈∈≻⊤≺⊥∋⊞◻⊣
+/// The Grammar computation: ⊢⊙⋈∈≻⊤≺⊥∋⊞⊡⊣
 /// This IS the computation - no search, just winding
 /// Pipeline: sic_povm_d2048_fiducial → CLINK L8 → horn_torus_winding_kernel
 /// Maps ECDLP to winding via MoDoT alchemy (256-bit)
@@ -110,7 +110,7 @@ pub fn run_shors_btc_2(public_key: &EcPoint) -> ShorsBtc2Result {
     // ⊥: Evaluate F-arm
     // ∋: Fuse at PINCH (FFUSE)
     // ⊞: Hold both arms at B-state (ENGAGR)
-    // ◻: Fix result - winding number IS private key (IFIX, prot=𐑭)
+    // ⊡: Fix result - winding number IS private key (IFIX, prot=𐑭)
     // ⊣: Anchor to Bitcoin PK structure (TANCH)
     let (private_key_opt, shor_params, qft_braid) = grammar_winding_extract(public_key);
 
@@ -145,7 +145,7 @@ pub fn run_shors_btc_2(public_key: &EcPoint) -> ShorsBtc2Result {
             "∋: Fuse at PINCH - winding collapses through origin".to_string(),
             "⊞: Hold both arms at B-state (ENGAGR = ⊞)".to_string(),
             "⊞⊥: DIALECT HOP — arev_hop toggles ⊥, exchanges R1↔R2 evidence".to_string(),
-            "◻: Fix result - winding number IS private key (IFIX, prot=𐑭)".to_string(),
+            "⊡: Fix result - winding number IS private key (IFIX, prot=𐑭)".to_string(),
             "⊣: Anchor to Bitcoin public key structure (curve-verified)".to_string(),
         ],
         coherence_cost: shor_result.b_bias_coherence,
@@ -175,11 +175,11 @@ pub struct ShorsBtc2Result {
 
 impl ShorsBtc2Result {
     pub fn format_glyph_word(&self) -> String {
-        "⊢⊙⋈∈≻⊤≺⊥∋⊞◻⊣".to_string()
+        "⊢⊙⋈∈≻⊤≺⊥∋⊞⊡⊣".to_string()
     }
 
     pub fn print_report(&self) {
-        sprintln!("⊢⊙⋈∈≻⊤≺⊥∋⊞◻⊣ shors_btc_2 — Bitcoin Private Key Extraction");
+        sprintln!("⊢⊙⋈∈≻⊤≺⊥∋⊞⊡⊣ shors_btc_2 — Bitcoin Private Key Extraction");
         sprintln!("════════════════════════════════════════════════════════════════════════════");
         sprintln!("Public Key: ({} , {})", self.public_key.x.to_hex_64(), self.public_key.y.to_hex_64());
         sprintln!("Private Key: {}", self.private_key.to_hex_64());
@@ -251,7 +251,7 @@ mod tests {
         let oneG = ec_mul(&one, &G);
         let result = run_shors_btc_2(&oneG);
         assert!(result.success);
-        assert_eq!(result.format_glyph_word(), "⊢⊙⋈∈≻⊤≺⊥∋⊞◻⊣");
+        assert_eq!(result.format_glyph_word(), "⊢⊙⋈∈≻⊤≺⊥∋⊞⊡⊣");
     }
 
     #[test]
@@ -259,7 +259,7 @@ mod tests {
         let pk = EcPoint::infinity();
         let result = run_shors_btc_2(&pk);
         assert!(result.success);
-        assert_eq!(result.format_glyph_word(), "⊢⊙⋈∈≻⊤≺⊥∋⊞◻⊣");
+        assert_eq!(result.format_glyph_word(), "⊢⊙⋈∈≻⊤≺⊥∋⊞⊡⊣");
     }
 }
 

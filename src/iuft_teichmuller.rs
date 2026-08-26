@@ -6,10 +6,10 @@
 //
 // Core bridge:
 //   Teichmüller deformation = promotion path preserving Frobenius structure
-//   Promotion signature [<,∋,⊥,◻] → gate parameter deltas
+//   Promotion signature [<,∋,⊥,⊡] → gate parameter deltas
 //     < (Parity)  → φ (azimuthal)
 //     ⊥ (Chirality) → φ (azimuthal)
-//     ◻ (Winding) → θ (latitude)
+//     ⊡ (Winding) → θ (latitude)
 //     ∋ (Composition) → latent (affects structure but not the 3 encoded angles)
 //
 //   Étale deformation: pinned primitives (P,F,K,G,Gm,Ph) unchanged
@@ -49,7 +49,7 @@ pub enum DeformationType {
 /// A single primitive promotion/demotion step in a Teichmüller path.
 #[derive(Clone, Debug)]
 pub struct PromotionStep {
-    pub primitive: &'static str,  // Family name: "≺", "∋", "⊥", "◻", etc.
+    pub primitive: &'static str,  // Family name: "≺", "∋", "⊥", "⊡", etc.
     pub from_ord: f32,
     pub to_ord: f32,
     pub delta: i32,               // Positive = promotion, negative = demotion
@@ -128,7 +128,7 @@ pub fn tier_transitions() -> &'static [TierTransition] {
         },
         TierTransition {
             from_tier: "O₁", to_tier: "O₂",
-            distance: 1.30, driver_primitive: "⊢+◻",
+            distance: 1.30, driver_primitive: "⊢+⊡",
             gate_jump: (45.0, 90.0, 0.0),    // Topological expansion
             is_p_gap: false,
         },
@@ -159,7 +159,7 @@ pub enum GateParam {
 /// Map a primitive family to the gate parameter it controls.
 pub fn primitive_to_gate_param(family: &str) -> GateParam {
     match family {
-        "⊢" | "◻" | "⊞" => GateParam::Theta,
+        "⊢" | "⊡" | "⊞" => GateParam::Theta,
         "≻" | "≺" | "⊥" => GateParam::Phi,
         "⊙" | "Ph" => GateParam::Psi,
         _ => GateParam::Latent,  // ⊣, ⋈, ⊤, ∈, ∋ — carried by the dialect sheaf
@@ -179,7 +179,7 @@ fn primitive_step_to_gate_delta(family: &str) -> (f64, f64, f64) {
     match family {
         // θ contributors (share 180° range, 3 families)
         "⊢" => (60.0, 0.0, 0.0),   // 180°/3 families = 60° per full-range step
-        "◻" => (60.0, 0.0, 0.0),
+        "⊡" => (60.0, 0.0, 0.0),
         "⊞" => (60.0, 0.0, 0.0),
         // φ contributors (share 360° range, 3 families)
         "≻" => (0.0, 120.0, 0.0),  // 360°/3 families = 120° per full-range step
@@ -333,7 +333,7 @@ fn max_ordinal_for_family(family: &str) -> f32 {
     match family {
         "⊢" => 4.0, "⊣" => 5.0, "≻" => 4.0, "≺" => 5.0,
         "⋈" => 3.0, "⊤" => 4.5, "∈" => 3.0, "∋" => 4.0,
-        "⊙" | "Ph" => 3.0, "⊥" => 4.0, "⊞" => 3.0, "◻" => 4.0,
+        "⊙" | "Ph" => 3.0, "⊥" => 4.0, "⊞" => 3.0, "⊡" => 4.0,
         _ => 1.0,
     }
 }
@@ -351,7 +351,7 @@ fn compare_primitives(src: &IgTuple, tgt: &IgTuple, steps: &mut Vec<PromotionSte
     compare_one("⊙", src.phi, tgt.phi, steps);
     compare_one("⊥", src.h, tgt.h, steps);
     compare_one("⊞", src.s, tgt.s, steps);
-    compare_one("◻", src.omega, tgt.omega, steps);
+    compare_one("⊡", src.omega, tgt.omega, steps);
 }
 
 fn compare_one(family: &'static str, a: IgPrim, b: IgPrim, steps: &mut Vec<PromotionStep>) {

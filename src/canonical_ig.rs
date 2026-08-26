@@ -5,7 +5,7 @@
 #![allow(dead_code)]
 
 /// The twelve axis marks, in canonical order.
-pub static PRIMITIVE_ORDER: [&str; 12] = ["⊢", "⊣", "≻", "≺", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "◻"];
+pub static PRIMITIVE_ORDER: [&str; 12] = ["⊢", "⊣", "≻", "≺", "⋈", "⊤", "∈", "∋", "⊙", "⊥", "⊞", "⊡"];
 
 /// Axis mark to the axis's name.
 pub static PRIMITIVE_NAMES: [(&str, &str); 12] = [
@@ -20,7 +20,7 @@ pub static PRIMITIVE_NAMES: [(&str, &str); 12] = [
     ("⊙", "Criticality"),
     ("⊥", "Chirality"),
     ("⊞", "Stoichiometry"),
-    ("◻", "Winding"),
+    ("⊡", "Winding"),
 ];
 
 /// Each axis's values, in ordinal order.
@@ -36,7 +36,7 @@ pub static CANONICAL_VALUES: [(&str, &[&str]); 12] = [
     ("⊙", &["𐑢", "⊙", "𐑮", "𐑻", "𐑣"]),
     ("⊥", &["𐑓", "𐑒", "𐑖", "𐑫"]),
     ("⊞", &["𐑙", "𐑕", "𐑳"]),
-    ("◻", &["𐑷", "𐑴", "𐑭", "𐑟"]),
+    ("⊡", &["𐑷", "𐑴", "𐑭", "𐑟"]),
 ];
 
 /// Value to its ordinal rank. Not every axis is consecutive:
@@ -53,7 +53,7 @@ pub static ORDINALS: [(&str, &[(&str, f32)]); 12] = [
     ("⊙", &[("𐑢", 1.0), ("⊙", 2.0), ("𐑮", 2.33), ("𐑻", 2.67), ("𐑣", 3.0)]),
     ("⊥", &[("𐑓", 1.0), ("𐑒", 2.0), ("𐑖", 3.0), ("𐑫", 4.0)]),
     ("⊞", &[("𐑙", 1.0), ("𐑕", 2.0), ("𐑳", 3.0)]),
-    ("◻", &[("𐑷", 1.0), ("𐑴", 2.0), ("𐑭", 3.0), ("𐑟", 4.0)]),
+    ("⊡", &[("𐑷", 1.0), ("𐑴", 2.0), ("𐑭", 3.0), ("𐑟", 4.0)]),
 ];
 
 /// Per-axis distance weights.
@@ -69,7 +69,7 @@ pub static WEIGHTS: [(&str, f32); 12] = [
     ("⊙", 1.0),
     ("⊥", 0.8),
     ("⊞", 1.0),
-    ("◻", 0.7),
+    ("⊡", 0.7),
 ];
 
 /// CL8NK formula fragments: axis -> value -> (fragment, atom, proximity).
@@ -86,7 +86,7 @@ pub static CL8NK_FORMULAE: [(&str, &[(&str, &str, &str, &str)]); 12] = [
     ("⊙", &[("⊙", "ξ → ∞ ∧ μ∘δ = id", "PHI_C", "match"), ("𐑮", "ξ ∈ ℂ ∧ Im(ξ) → ∞", "", "close"), ("𐑻", "H(λ) non-Herm ∧ det(H - λI) = 0 ∧ ∂_λ H = 0", "", "distant"), ("𐑣", "ξ → ∞ ∧ chaotic(x)", "", "distant"), ("𐑢", "¬∃ξ( diverges(ξ) )", "", "distant")]),
     ("⊥", &[("𐑫", "∀n∃φ( rank(φ) > n ∧ φ fixed by μ∘δ ∧ φ ∈ V )", "ETERNAL_FIXEDPOINT", "match"), ("𐑖", "∃y∃z( y ∈ x ∧ z ∈ y ∧ ¬ z ∈ x ∧ rank(z) < rank(y) )", "TEMPD2", "close"), ("𐑒", "∃y( P(y) ↔ P(S²(y)) )", "", "distant"), ("𐑓", "∀x( P(x) ↔ P(S(x)) )", "", "distant")]),
     ("⊞", &[("𐑳", "∃a∈A∃b∈B( type(a) ≠ type(b) )", "", "match"), ("𐑕", "∀a∈A∀b∈B( type(a) = type(b) )", "", "close"), ("𐑙", "|A| = 1 ∧ |B| = 1", "", "distant")]),
-    ("◻", &[("𐑟", "Braid(σ_i) ∧ R_matrix ≠ 0 ∧ nonAbelian(x)", "BRAID_TRANSCENDENCE", "match"), ("𐑭", "∮_γ A = 2πn ∧ n ∈ ℤ ∧ wind(γ) ≠ 0", "ZWIND", "close"), ("𐑴", "∮_γ A = nπ ∧ n ∈ ℤ₂", "", "distant"), ("𐑷", "∮_γ dx = 0", "", "distant")]),
+    ("⊡", &[("𐑟", "Braid(σ_i) ∧ R_matrix ≠ 0 ∧ nonAbelian(x)", "BRAID_TRANSCENDENCE", "match"), ("𐑭", "∮_γ A = 2πn ∧ n ∈ ℤ ∧ wind(γ) ≠ 0", "ZWIND", "close"), ("𐑴", "∮_γ A = nπ ∧ n ∈ ℤ₂", "", "distant"), ("𐑷", "∮_γ dx = 0", "", "distant")]),
 ];
 
 

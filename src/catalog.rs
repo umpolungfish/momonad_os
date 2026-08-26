@@ -349,7 +349,7 @@ const ZFC_FE: CatalogEntry = entry(
 
 // ── CLINK L8 (O_∞⁺): ⟨𐑦·𐑸·𐑾·𐑹·𐑐·𐑧·𐑲·𐑵·⊙·𐑫·𐑳·𐑟⟩ ──
 const CLINK_L8: CatalogEntry = entry(
-    "clink_l8", "CLINK Layer 8 Organism — terminal ontological layer, O_∞⁺ with ◻/∋ transcendence",
+    "clink_l8", "CLINK Layer 8 Organism — terminal ontological layer, O_∞⁺ with ⊡/∋ transcendence",
     IgPrim::if_, IgPrim::are, IgPrim::ian,
     IgPrim::or_, IgPrim::peep, IgPrim::egg,
     IgPrim::ice, IgPrim::ooze,
@@ -1287,8 +1287,8 @@ pub fn primitive_short(prim: IgPrim) -> &'static str {
         IgPrim::kick => "⊥_1", IgPrim::fee => "⊥_0",
         IgPrim::up => "⊞_n:m", IgPrim::so => "⊞_n:n",
         IgPrim::hung => "⊞_1:1",
-        IgPrim::ah => "◻_ℤ", IgPrim::oak => "◻_ℤ₂",
-        IgPrim::awe => "◻_0", IgPrim::zoo => "◻_NA",
+        IgPrim::ah => "⊡_ℤ", IgPrim::oak => "⊡_ℤ₂",
+        IgPrim::awe => "⊡_0", IgPrim::zoo => "⊡_NA",
     }
 }
 
@@ -1306,7 +1306,7 @@ pub fn primitive_family(prim: IgPrim) -> &'static str {
         IgPrim::monad | IgPrim::roar | IgPrim::err | IgPrim::woe | IgPrim::haha => "⊙",
         IgPrim::wool | IgPrim::sure | IgPrim::kick | IgPrim::fee => "⊥",
         IgPrim::up | IgPrim::so | IgPrim::hung => "⊞",
-        IgPrim::ah | IgPrim::oak | IgPrim::awe | IgPrim::zoo => "◻",
+        IgPrim::ah | IgPrim::oak | IgPrim::awe | IgPrim::zoo => "⊡",
     }
 }
 
@@ -1316,7 +1316,7 @@ pub fn ordinal_table(family: &str) -> &'static [IgPrim] {
         "⊢" => &D_ORD, "⊣" => &T_ORD, "≻" => &R_ORD,
         "≺" => &P_ORD, "⋈" => &F_ORD, "⊤" => &K_ORD,
         "∈" => &G_ORD, "∋" => &C_ORD, "⊙" => &PHI_ORD,
-        "⊥" => &H_ORD, "⊞" => &S_ORD, "◻" => &OMEGA_ORD,
+        "⊥" => &H_ORD, "⊞" => &S_ORD, "⊡" => &OMEGA_ORD,
         _ => &D_ORD,
     }
 }

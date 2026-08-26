@@ -34,7 +34,7 @@ AXES = [
  ('⊙','Phi',['monad','roar','err','woe','haha']),
  ('⊥','H',['wool','sure','kick','fee']),
  ('⊞','S',['up','so','hung']),
- ('◻','Om',['ah','oak','awe','zoo']),
+ ('⊡','Om',['ah','oak','awe','zoo']),
 ]
 
 def derive(d, p, fo, sr, dc, sx, nz):

@@ -2,7 +2,7 @@
 //! dialetheic_fib_shor.rs — Dialetheic Fibonacci Shor's Algorithm
 //! =================================================================
 //! ob3ect: dialetheic_fibonacci_shors_algorithm
-//!   word:        ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈◻⊣   (15 steps)
+//!   word:        ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈⊡⊣   (15 steps)
 //!   register:    N→N→T→T→Ttf→Ttf→Ttf→Ttf→A→N→TF→TF→TF→TF→TF
 //!   verdict:     B (dialetheic) — the first FSPLIT3 dangles
 //!   phase:       PHASE-BEARING under ROTAT (final register, topology class)
@@ -81,7 +81,7 @@ impl Op {
         match self {
             Op::VINIT => '⊢', Op::FSPLIT3 => '∈', Op::AFWD => '≻', Op::CLINK => '⋈',
             Op::ENGAGR => '⊞', Op::EVALT => '⊤', Op::EVALF => '⊥', Op::AREV => '≺',
-            Op::FFUSE3 => '∋', Op::IMSCRIB => '⊙', Op::IFIX => '◻', Op::TANCH => '⊣',
+            Op::FFUSE3 => '∋', Op::IMSCRIB => '⊙', Op::IFIX => '⊡', Op::TANCH => '⊣',
         }
     }
 
@@ -356,7 +356,7 @@ pub fn report(r: &DialetheicFibShorResult) -> String {
     let mut s = String::new();
     s.push_str(&format!("══ Dialetheic Fibonacci Shor: N={}, a={} ══\n", r.n_val, r.a_val));
     s.push_str(&format!("  tuple: {}  (kernel-derived, crystal 16404190)\n", r.tuple));
-    s.push_str(&format!("  word:  ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈◻⊣  (15 steps)\n\n"));
+    s.push_str(&format!("  word:  ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈⊡⊣  (15 steps)\n\n"));
 
     s.push_str("  ── 16₃ register walk ──\n");
     s.push_str("  step  op        reg→reg      frame\n");
@@ -405,7 +405,7 @@ pub fn report(r: &DialetheicFibShorResult) -> String {
     match (r.factor1, r.factor2) {
         (Some(p), Some(q)) => {
             s.push_str(&format!("  ✓ {} = {} × {}\n", r.n_val, p, q));
-            s.push_str(&format!("  factors written to the classical register (◻ IFIX)\n"));
+            s.push_str(&format!("  factors written to the classical register (⊡ IFIX)\n"));
         }
         _ => {
             let half = mod_pow(r.a_val, r.period / 2, r.n_val);

@@ -54,7 +54,7 @@ impl RepairEngine {
         Self {
             glyphs: vec![
                 '⊢', '⊣', '≻', '≺', '⋈', '⊤', 
-                '∈', '∋', '⊙', '⊥', '⊞', '◻'
+                '∈', '∋', '⊙', '⊥', '⊞', '⊡'
             ],
             alpha: 1.0,
             beta: 0.5,
@@ -368,7 +368,7 @@ pub fn repair_main(args: &[&str]) -> String {
                  cost = α(edit_distance) + β(ΔS) + γ(tier_change) + δ(new_assumptions)\n\
                  \n\
                  Example:\n\
-                 repair ⊢⊙∈⊤⊥∋◻⊣\n"
+                 repair ⊢⊙∈⊤⊥∋⊡⊣\n"
             .to_string();
     }
 

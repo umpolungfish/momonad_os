@@ -7,11 +7,11 @@ cd "$(dirname "$0")/../.."           # -> mOMonadOS root
 RUN=./run_hosted_cmds.sh
 
 declare -A WORD=(
- [rh_affirm]="⊢∈≻⊤≺⊥⊞⋈⊙∋◻⊣"          [rh_negate]="⊢∈≻⊤≺⊥⋈⊙⊞∋◻⊣"
- [collatz_affirm]="⊢∈⊤≺⊥≻≺∋⋈⊞◻⊙∈⊤≺⊥≻≺∋⋈◻⊣" [collatz_negate]="⊢∈≻⊤≺⊥⋈⊙⊞∋◻⊣"
- [bsd_affirm]="⊢∈≻⊤≺⊥⋈⊞⊙∋◻⊣"         [bsd_negate]="⊢∈≻⊤≺⊥⋈⊙⊞∋◻⊣"
- [hodge_affirm]="⊢∈≻⊤⋈≺⊥⊞∋⊙◻⋈⊙⊣"     [hodge_negate]="⊢∈≻⊤⋈⊙≺⊥⊞◻∋⋈⊙⊣"
- [ns_affirm]="⊢∈≻⊤≺⊥∋⋈⊞◻⊙⊣"          [ns_negate]="⊢∈≻⊤≺⊥⋈⊙⊞∋◻⊣"
+ [rh_affirm]="⊢∈≻⊤≺⊥⊞⋈⊙∋⊡⊣"          [rh_negate]="⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣"
+ [collatz_affirm]="⊢∈⊤≺⊥≻≺∋⋈⊞⊡⊙∈⊤≺⊥≻≺∋⋈⊡⊣" [collatz_negate]="⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣"
+ [bsd_affirm]="⊢∈≻⊤≺⊥⋈⊞⊙∋⊡⊣"         [bsd_negate]="⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣"
+ [hodge_affirm]="⊢∈≻⊤⋈≺⊥⊞∋⊙⊡⋈⊙⊣"     [hodge_negate]="⊢∈≻⊤⋈⊙≺⊥⊞⊡∋⋈⊙⊣"
+ [ns_affirm]="⊢∈≻⊤≺⊥∋⋈⊞⊡⊙⊣"          [ns_negate]="⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣"
 )
 declare -A EXPECT=(
  [rh_affirm]=3444190  [rh_negate]=3444190
@@ -40,8 +40,8 @@ done
 echo
 echo "--- proved controls (Mills, Lee-Yang): crystal 3444190, vox T, classify ⊞ ---"
 declare -A CTL=(
- [mills_affirm]="⊢∈≻⊤⋈◻≺⊥⊞∋⊙⋈≻⊤◻⊣" [mills_negate]="⊢⊙≻⋈∈⊤⊥⊞≺∋◻⊣⊙"
- [leeyang_affirm]="⊢∈≻⊤≺⊥⊞⋈∋⊙◻⊣" [leeyang_negate]="⊢⊣∈≻⊤⋈≺⊥⊙⊞∋◻⊣"
+ [mills_affirm]="⊢∈≻⊤⋈⊡≺⊥⊞∋⊙⋈≻⊤⊡⊣" [mills_negate]="⊢⊙≻⋈∈⊤⊥⊞≺∋⊡⊣⊙"
+ [leeyang_affirm]="⊢∈≻⊤≺⊥⊞⋈∋⊙⊡⊣" [leeyang_negate]="⊢⊣∈≻⊤⋈≺⊥⊙⊞∋⊡⊣"
 )
 printf '%-16s %-10s %-10s %-6s %-4s %s\n' NAME EXPECT GOT VOX CLS RESULT
 for k in mills_affirm mills_negate leeyang_affirm leeyang_negate; do

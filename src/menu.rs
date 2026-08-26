@@ -23,7 +23,7 @@ pub static MAIN_MENU: &[MenuItem] = &[
     MenuItem { name: "Programs", cmd: "programs",  desc: "Program loading (list, canonical, continuous, novel, shunt)", example: "", submenu: Some(PROGRAMS_MENU) },
     MenuItem { name: "Crystal",  cmd: "crystal",  desc: "Crystal FS (decode, store, find, name)", example: "", submenu: Some(CRYSTAL_MENU) },
     MenuItem { name: "Grammar",  cmd: "grammar",  desc: "Grammar bridges (ig, classify, frob, aleph, shor, rh, ym)", example: "", submenu: Some(GRAMMAR_MENU) },
-    MenuItem { name: "Quantum",  cmd: "quantum",  desc: "Quantum computation (fibqc, jones, braids, shor, shors_btc_2, qft, iuft, sic, d12, d2048)", example: "help quantum", submenu: Some(QUANTUM_MENU) },
+    MenuItem { name: "Quantum",  cmd: "quantum",  desc: "Quantum computation (fibqc, jones, braids, shor, shors_btc_2, btc_oneshot, qft, iuft, sic, d12, d2048)", example: "help quantum", submenu: Some(QUANTUM_MENU) },
     MenuItem { name: "IMASM",    cmd: "imasm",    desc: "IMASM word walks (cycle, weight, banked, insert, trans, arev)", example: "", submenu: Some(IMASM_MENU) },
     MenuItem { name: "Kernel",   cmd: "kernel",   desc: "Kernel utilities (ask, spine, vessel, vita, whoami, ruleset)", example: "", submenu: Some(KERNEL_MENU) },
     MenuItem { name: "Rebis",    cmd: "rebis",    desc: "Red-Hot Rebis (codon, translate, genetics, materials, bio, tx)", example: "", submenu: Some(REBIS_MENU) },
@@ -130,11 +130,11 @@ pub static CRYSTAL_MENU: &[MenuItem] = &[
 ];
 
 pub static IMASM_MENU: &[MenuItem] = &[
-    MenuItem { name: "cycle", cmd: "cycle", desc: "walk an IMASM word around its ROTAT orbit (glyphs only)", example: "cycle ⊢⊙∈⊤⊥∋⋈◻⊣", submenu: None },
-    MenuItem { name: "weight", cmd: "weight", desc: "where the weight moves through an IMASM word", example: "weight ⊢⊙∈⊤⊥∋⋈◻⊣", submenu: None },
-    MenuItem { name: "banked", cmd: "banked", desc: "was a count cleared with nothing banked?", example: "banked ⊢⊙∈⊤⊥∋⋈◻⊣", submenu: None },
-    MenuItem { name: "insert", cmd: "insert", desc: "every one-glyph repair for an exposed word", example: "insert ⊢⊙∈⊤⊥⊞∋><⋈◻⊣", submenu: None },
-    MenuItem { name: "trans", cmd: "trans", desc: "transitions counted on the ring, closing edge included", example: "trans ⊢⊙∈⊤⊥∋⋈◻⊣", submenu: None },
+    MenuItem { name: "cycle", cmd: "cycle", desc: "walk an IMASM word around its ROTAT orbit (glyphs only)", example: "cycle ⊢⊙∈⊤⊥∋⋈⊡⊣", submenu: None },
+    MenuItem { name: "weight", cmd: "weight", desc: "where the weight moves through an IMASM word", example: "weight ⊢⊙∈⊤⊥∋⋈⊡⊣", submenu: None },
+    MenuItem { name: "banked", cmd: "banked", desc: "was a count cleared with nothing banked?", example: "banked ⊢⊙∈⊤⊥∋⋈⊡⊣", submenu: None },
+    MenuItem { name: "insert", cmd: "insert", desc: "every one-glyph repair for an exposed word", example: "insert ⊢⊙∈⊤⊥⊞∋><⋈⊡⊣", submenu: None },
+    MenuItem { name: "trans", cmd: "trans", desc: "transitions counted on the ring, closing edge included", example: "trans ⊢⊙∈⊤⊥∋⋈⊡⊣", submenu: None },
     MenuItem { name: "arev", cmd: "arev", desc: "H hop: read snapshot through the R1<->R2 mirror", example: "arev", submenu: None },
 ];
 
@@ -147,7 +147,7 @@ pub static KERNEL_MENU: &[MenuItem] = &[
     MenuItem { name: "ruleset", cmd: "ruleset", desc: "show the active ruleset", example: "ruleset", submenu: None },
     MenuItem { name: "absorption", cmd: "absorption", desc: "list all absorption rules", example: "absorption", submenu: None },
     MenuItem { name: "replicative", cmd: "replicative", desc: "load the program targeting O_inf_dag (R2) deliberately", example: "replicative", submenu: None },
-    MenuItem { name: "vox",        cmd: "vox",        desc: "Control-flow closure auditor: verdict <word> | evm <hex> | wasm <hex> | classify <mn>", example: "vox verdict ⊢∈⊤><>∋◻", submenu: None },
+    MenuItem { name: "vox",        cmd: "vox",        desc: "Control-flow closure auditor: verdict <word> | evm <hex> | wasm <hex> | classify <mn>", example: "vox verdict ⊢∈⊤><>∋⊡", submenu: None },
     MenuItem { name: "quit", cmd: "quit", desc: "halt the kernel (aliases exit, halt)", example: "quit", submenu: None },
 ];
 
@@ -157,9 +157,10 @@ pub static QUANTUM_MENU: &[MenuItem] = &[
     MenuItem { name: "bi", cmd: "bi", desc: "Draw a braid word — strand diagram in the terminal, SVG with `svg`, the closed braid as a ring with `loop`; window with start:count, column height with /N (alias braid_image)", example: "bi loop 1 2 -1 -2 1 2", submenu: None },
     MenuItem { name: "jp", cmd: "jp", desc: "Jones polynomial at the 1/5 winding; signed Artin generators (alias jones_polynomial)", example: "jp 1 1 1", submenu: None },
     MenuItem { name: "bg",         cmd: "bg",         desc: "Braid word to grammar tuple (alias braid-grammar); winding is a closed form in the writhe", example: "bg tuple 1,2,1 3", submenu: None },
-    MenuItem { name: "shor",       cmd: "shor",       desc: "Belnap Shor pipeline + dialetheic Fibonacci Shor (word ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈◻⊣); N=15,21", example: "shor dialetheic 15 7", submenu: None },
+    MenuItem { name: "shor",       cmd: "shor",       desc: "Belnap Shor pipeline + dialetheic Fibonacci Shor (word ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈⊡⊣); N=15,21", example: "shor dialetheic 15 7", submenu: None },
     MenuItem { name: "shors_btc_2", cmd: "shors_btc_2", desc: "Shor over secp256k1 ECDLP: recover a Bitcoin private key from a public key (x,y)", example: "shors_btc_2", submenu: None },
     MenuItem { name: "qft",        cmd: "qft",        desc: "Quantum Fourier Transform: circuit | phases | iqft | iqft braid | braid, on n qubits", example: "qft circuit 3", submenu: None },
+    MenuItem { name: "btc_oneshot",  cmd: "btc_oneshot",  desc: "BTC Secret Key Oneshot Operator — structural verification & phase steps", example: "btc_oneshot verify", submenu: None },
     MenuItem { name: "winding",    cmd: "winding",    desc: "Period as a torus winding: order | factor | closure | factorgen (alias wperiod)", example: "winding order 2 101", submenu: None },
     MenuItem { name: "iuft",       cmd: "iuft",       desc: "IUFT QC gates — the 12->3 Euler-angle SU(2) encoding of an IG tuple", example: "iuft list", submenu: None },
     MenuItem { name: "teich",      cmd: "teich",      desc: "IUFT <-> IUTT bridge: Teichmuller deformation paths as gate trajectories", example: "teich canonical", submenu: None },
@@ -223,7 +224,7 @@ pub static GRAMMAR_MENU: &[MenuItem] = &[
     MenuItem { name: "proof-braider", cmd: "proof-braider", desc: "Lift a claim to a braid and back; PASS iff Frobenius closure survives", example: "proof-braider roundtrip Imscribing.Frobenius", submenu: None },
     MenuItem { name: "universe-wormhole", cmd: "universe-wormhole", desc: "Minimum gate-space path between two hop frameworks, as a braid + Jones", example: "universe-wormhole hqe fibonacci", submenu: None },
     MenuItem { name: "vox-ce", cmd: "vox-ce", desc: "Lift EVM/WASM hex into an IMASM word and verdict its control-flow closure", example: "vox-ce evm 0x600160025b00", submenu: None },
-    MenuItem { name: "consciousness-lath", cmd: "consciousness-lath", desc: "Single-axis mutation that most raises the C-score with both gates open", example: "consciousness-lath ⊢∈><⊤⋈⊙⊞∋◻⊣", submenu: None },
+    MenuItem { name: "consciousness-lath", cmd: "consciousness-lath", desc: "Single-axis mutation that most raises the C-score with both gates open", example: "consciousness-lath ⊢∈><⊤⋈⊙⊞∋⊡⊣", submenu: None },
     MenuItem { name: "paradox-engine", cmd: "paradox-engine", desc: "Hunt words that are dialetheias by four readings at once (B, price, gate1, C=0)", example: "paradox-engine --min-price 3", submenu: None },
     MenuItem { name: "key-dissolver", cmd: "key-dissolver", desc: "SIC-narrowed bounded window before a BSGS split; recovers no real key", example: "key-dissolver 03f01d 40", submenu: None },
     MenuItem { name: "compiler", cmd: "compiler", desc: "Compile a braid to imasm/jones/lean, or a token word back to a braid", example: "compiler braid 1 2 1 --to imasm", submenu: None },

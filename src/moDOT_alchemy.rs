@@ -178,7 +178,7 @@ pub fn kozrev_mirror_sieve() -> String {
 // ─────────────────────────────────────────────────────────────
 
 /// CLINK L8 reference tuple: ⟨𐑦⋅𐑸⋅𐑾⋅𐑹⋅𐑐⋅𐑧⋅𐑲⋅𐑵⋅⊙⋅𐑫⋅𐑳⋅𐑟⟩
-/// O_∞⁺ terminal ontological layer. Exceeds ZFC_fe at ◻/∋.
+/// O_∞⁺ terminal ontological layer. Exceeds ZFC_fe at ⊡/∋.
 #[derive(Clone, Copy, Debug)]
 pub struct ClinkL8Tuple {
     pub d: IgPrim,    // ⊢
@@ -192,7 +192,7 @@ pub struct ClinkL8Tuple {
     pub phi: IgPrim,  // ⊙
     pub h: IgPrim,    // ⊥
     pub s: IgPrim,    // ⊞
-    pub omega: IgPrim, // ◻
+    pub omega: IgPrim, // ⊡
 }
 
 impl ClinkL8Tuple {
@@ -222,7 +222,7 @@ pub fn distance_to_clink_l8(sys_tuple: &IgTuple) -> (u32, Vec<(&'static str, IgP
     let dist_specs: [(&str, u32, u32); 12] = [
         ("D", 8, 30), ("T", 9, 40), ("R", 7, 30), ("P", 9, 40),
         ("F", 6, 20), ("K", 7, 35), ("G", 6, 20), ("C", 8, 30),
-        ("H", 9, 30), ("S", 5, 20), ("◻", 7, 30), ("⊙", 8, 30),
+        ("H", 9, 30), ("S", 5, 20), ("⊡", 7, 30), ("⊙", 8, 30),
     ];
 
     let mut total: u64 = 0;
@@ -259,7 +259,7 @@ fn get_prim(t: &IgTuple, key: &str) -> Option<IgPrim> {
     match key {
         "D" => Some(t.d), "T" => Some(t.t), "R" => Some(t.r), "P" => Some(t.p),
         "F" => Some(t.f), "K" => Some(t.k), "G" => Some(t.g), "C" => Some(t.c),
-        "H" => Some(t.h), "S" => Some(t.s), "◻" => Some(t.omega), "⊙" => Some(t.phi),
+        "H" => Some(t.h), "S" => Some(t.s), "⊡" => Some(t.omega), "⊙" => Some(t.phi),
         _ => None,
     }
 }
@@ -271,7 +271,7 @@ fn ord_table_for(key: &str) -> &'static [IgPrim] {
         "F" => &F_ORD, "K" => &K_ORD,
         "G" => &G_ORD, "C" => &C_ORD,
         "H" => &H_ORD, "S" => &S_ORD,
-        "◻" => &OMEGA_ORD, "⊙" => &PHI_ORD,
+        "⊡" => &OMEGA_ORD, "⊙" => &PHI_ORD,
         _ => &D_ORD,
     }
 }

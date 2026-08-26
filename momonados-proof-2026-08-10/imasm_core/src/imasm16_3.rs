@@ -38,7 +38,7 @@
 //!     AREV  the reverse morphism, T↔F and t↔f together (bilattice negation:
 //!           inverts ≤_t, leaves ≤_i exactly — a swap preserves |x|). It factors
 //!           internally into a per-layer swap each, but those factors are not
-//!           opcodes; the retired marks ~ ≁ once named them and ◻ IFIX replaces
+//!           opcodes; the retired marks ~ ≁ once named them and ⊡ IFIX replaces
 //!           them, so the printed set is twelve.
 //! ```
 //!
@@ -67,14 +67,14 @@ pub enum Token16_3 {
     Evalt,   // ⊤  1→1  evaluates the True axis (≤_t), WORK
     Evalf,   // ⊥  1→1  evaluates the False axis (≤_t), WORK
     Evali,   // ⊞  1→1  evaluates the Information axis (≤_i), WORK
-    Ifix,    // ◻  1→1  irreversible commit, WORK
+    Ifix,    // ⊡  1→1  irreversible commit, WORK
 }
 
 use Token16_3::*;
 
 // THE set is twelve. AREV `<` is the whole reverse morphism; the two-layer swaps
 // it factors into (once mis-spelled ~ TNEG / ≁ INEG) are internal to `<`, never
-// opcodes — ◻ IFIX replaces those retired marks. ROTAT ↺/↻ is the op-opcode that
+// opcodes — ⊡ IFIX replaces those retired marks. ROTAT ↺/↻ is the op-opcode that
 // acts ON a word, not a token in it.
 pub const ALL_TOKENS: [Token16_3; 12] = [
     Vinit, Tanch, Afwd, Arev, Clink, Imscrib, Fsplit3, Ffuse3,
@@ -86,7 +86,7 @@ impl Token16_3 {
         match self {
             Vinit => '⊢', Tanch => '⊣', Afwd => '>', Arev => '<', Clink => '⋈',
             Imscrib => '⊙', Fsplit3 => '∈', Ffuse3 => '∋', Evalt => '⊤',
-            Evalf => '⊥', Evali => '⊞', Ifix => '◻',
+            Evalf => '⊥', Evali => '⊞', Ifix => '⊡',
         }
     }
 
@@ -550,7 +550,7 @@ pub fn run(args: &[String]) -> String {
         }
         "check" => {
             let Some(word) = args.get(1) else {
-                return "imasm16_3 check <glyph_word>; e.g. imasm16_3 check ⊢>∈⊤⊥⊞∋◻⊣\n".to_string();
+                return "imasm16_3 check <glyph_word>; e.g. imasm16_3 check ⊢>∈⊤⊥⊞∋⊡⊣\n".to_string();
             };
             let steps = parse_glyph_word(word);
             if steps.is_empty() {
@@ -569,7 +569,7 @@ mod tests {
     #[test]
     fn example_word_closes_with_work() {
         // Legal-alphabet tri word: fork, work on the arms, fuse, latch.
-        let steps = parse_glyph_word("⊢>∈⊤⊥⊞∋◻⊣");
+        let steps = parse_glyph_word("⊢>∈⊤⊥⊞∋⊡⊣");
         assert_eq!(steps.len(), 9);
         let (verdict, _) = tri_ancestral_verdict(&steps);
         assert_eq!(verdict, 'T');
@@ -583,14 +583,14 @@ mod tests {
             assert!(parse_glyph_word(m).is_empty(), "retired mark {m} still parses");
         }
         // Interspersed in a real word they are simply skipped (read as nothing).
-        assert_eq!(parse_glyph_word("⊢∈~⊤≁∋◻⊣"), parse_glyph_word("⊢∈⊤∋◻⊣"));
+        assert_eq!(parse_glyph_word("⊢∈~⊤≁∋⊡⊣"), parse_glyph_word("⊢∈⊤∋⊡⊣"));
     }
 
     #[test]
     fn verdict_is_rotat_invariant() {
         // ROTAT is the cyclic shift, so every rotation is the same object and
         // must return the same verdict. Linear pairing gave T,T,F,F,F,F,F,F,F,T,T,T.
-        let base: Vec<char> = "⊢∈⋈<>⊤⊥⊞∋⊙◻⊣".chars().collect();
+        let base: Vec<char> = "⊢∈⋈<>⊤⊥⊞∋⊙⊡⊣".chars().collect();
         let n = base.len();
         for k in 0..n {
             let rot: String = (0..n).map(|i| base[(i + k) % n]).collect();
@@ -604,7 +604,7 @@ mod tests {
     fn arev_does_not_close_the_fork() {
         // AREV is work on an arm, not a fuse. Its body used to be identical to
         // VINIT's, which discarded the arms' touches so ∋ folded an empty set.
-        let steps = parse_glyph_word("⊢∈⊤⋈⊥<>⊞∋⊙◻⊣");
+        let steps = parse_glyph_word("⊢∈⊤⋈⊥<>⊞∋⊙⊡⊣");
         let mut m = Machine::new();
         for &t in &steps { m.step(t); }
         assert_eq!(m.reg.name(), "A", "the three arms must all reach the apex");
@@ -615,7 +615,7 @@ mod tests {
         // Fork state is a stack: an inner ∋ must not close the enclosing fork.
         // With in_split as a bool the outer region lost every touch after the
         // first inner fuse and landed on Ftf instead of the top.
-        let steps = parse_glyph_word("⊢⊙⋈∈∈>⊤<∋∈⊥<∋⊞∋⋈⊙◻⊣");
+        let steps = parse_glyph_word("⊢⊙⋈∈∈>⊤<∋∈⊥<∋⊞∋⋈⊙⊡⊣");
         let mut m = Machine::new();
         for &t in &steps { m.step(t); }
         assert_eq!(m.reg.name(), "A", "nested apexes must fold into the outer fork");
@@ -623,7 +623,7 @@ mod tests {
 
     #[test]
     fn cross_repo_parity_word() {
-        let steps = parse_glyph_word("⊢>>⋈∈⊤◻∋<◻⊣");
+        let steps = parse_glyph_word("⊢>>⋈∈⊤⊡∋<⊡⊣");
         let (verdict, _) = tri_ancestral_verdict(&steps);
         assert_eq!(verdict, 'T');
     }

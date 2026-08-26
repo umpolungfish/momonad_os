@@ -5,7 +5,7 @@
 -- Grammar workflow (this file is the conventional decomposition of a Grammar
 -- construction; see the companion note). The descent-operator obligation was
 -- imscribed and its closure checked with the structural verbs: the split→work→
--- fuse protocol closes (⊢∈⊤⊥∋◻⊣ ⟹ T), so the descent ARCHITECTURE is sound. The
+-- fuse protocol closes (⊢∈⊤⊥∋⊡⊣ ⟹ T), so the descent ARCHITECTURE is sound. The
 -- kernel closure verdict on the whole theorem, however, is OPEN: it stands on
 -- `descent_operator_exists`. The catalog reading locates the cut on the ⊥
 -- (chirality) axis — the promotion 𐑖 (two-step, bounded descent: cases A and B)

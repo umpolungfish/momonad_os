@@ -40,7 +40,7 @@ impl MinimalEngine {
             // The 12 IMASM glyphs
             glyphs: vec![
                 '⊢', '⊣', '≻', '≺', '⋈', '⊤', 
-                '∈', '∋', '⊙', '⊥', '⊞', '◻'
+                '∈', '∋', '⊙', '⊥', '⊞', '⊡'
             ],
             max_length: 16,
         }
@@ -189,7 +189,7 @@ impl MinimalEngine {
             '⊙' => "IMSCRIB".to_string(),
             '⊥' => "EVALF".to_string(),
             '⊞' => "ENGAGR".to_string(),
-            '◻' => "IFIX".to_string(),
+            '⊡' => "IFIX".to_string(),
             _ => format!("UNKNOWN({})", glyph),
         }
     }

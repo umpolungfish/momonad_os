@@ -75,7 +75,7 @@
       },
       "IFIX": {
         "chosen_element": "descent log",
-        "glyph": "◻",
+        "glyph": "⊡",
         "justification": "permanent record of reduction steps",
         "opcode": "IFIX",
         "rejected_candidates": []
@@ -171,7 +171,7 @@
         },
         {
           "domain_action": "append reduction log to audit",
-          "glyph": "◻",
+          "glyph": "⊡",
           "opcode": "IFIX",
           "step_num": 8
         }

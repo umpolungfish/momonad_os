@@ -637,7 +637,7 @@ pub fn format_theorem_result(r: &TheoremResult) -> String {
 use crate::imas_ig::IgTuple;
 
 /// Compute B4 status from tuple properties.
-/// ⊙=critical + ◻=non-Abelian → B4::B (dialetheic barrier)
+/// ⊙=critical + ⊡=non-Abelian → B4::B (dialetheic barrier)
 /// <=Frobenius-special → B4::T (closed)
 /// ⊙=sub-critical → B4::T (determined)
 /// Default → B4::B (open)
@@ -685,7 +685,7 @@ pub fn verify_tuple_frobenius(v: &mut FrobeniusVerifier, tuple: &IgTuple) {
         let ok = tuple.t == IgPrim::are || tuple.t == IgPrim::mime;
         v.verify_usize(if ok { 1 } else { 0 }, 1);
     }
-    // Verify Frobenius-special: <=𐑹 implies ◻ ≥ Z
+    // Verify Frobenius-special: <=𐑹 implies ⊡ ≥ Z
     if tuple.p == IgPrim::or_ {
         let ok = tuple.omega.ordinal() >= IgPrim::ah.ordinal();
         v.verify_usize(if ok { 1 } else { 0 }, 1);

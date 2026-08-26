@@ -15,7 +15,7 @@ PN = ["Canonical", "Hand-crafted", "Expansion"]
 # MoDoT/ask_native/src/imasm.rs; the retired forms ◇ ● + × ¬ = do not appear.
 GLYPH = {"VINIT":"⊢","TANCH":"⊣","AFWD":"≻","AREV":"≺",
          "CLINK":"⋈","IMSCRIB":"⊙","FSPLIT":"∈","FFUSE":"∋",
-         "EVALT":"⊤","EVALF":"⊥","ENGAGR":"⊞","IFIX":"◻"}
+         "EVALT":"⊤","EVALF":"⊥","ENGAGR":"⊞","IFIX":"⊡"}
 FAM = {"VINIT":0,"TANCH":0,"AFWD":0,"AREV":0,"CLINK":0,"IMSCRIB":0,
        "FSPLIT":1,"FFUSE":1,"EVALT":2,"EVALF":2,"ENGAGR":2,"IFIX":3}
 FAMC = ["#0072B2","#7B3294","#B8860B","#009E73"]
@@ -127,7 +127,7 @@ H.append("""<script>
 const DATA = """ + json.dumps(DATA) + """;
 const GLYPH = {"VINIT":"⊢","TANCH":"⊣","AFWD":"≻","AREV":"≺","CLINK":"⋈",
   "IMSCRIB":"⊙","FSPLIT":"∈","FFUSE":"∋","EVALT":"⊤","EVALF":"⊥",
-  "ENGAGR":"⊞","IFIX":"◻"};
+  "ENGAGR":"⊞","IFIX":"⊡"};
 const FAM = {"VINIT":0,"TANCH":0,"AFWD":0,"AREV":0,"CLINK":0,"IMSCRIB":0,
   "FSPLIT":1,"FFUSE":1,"EVALT":2,"EVALF":2,"ENGAGR":2,"IFIX":3};
 const FAMC = ["#0072B2","#7B3294","#B8860B","#009E73"];

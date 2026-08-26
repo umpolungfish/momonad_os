@@ -36,7 +36,7 @@ pub fn consciousness_lath_main(args: &[&str]) -> String {
                 Read the word as a tuple and find the single-axis mutation that\n\
                 most raises the consciousness score with both gates open. The\n\
                 kernel's consciousness_eval is the judge.\n\n\
-                Try:  consciousness-lath ⊢∈><⊤⋈⊙⊞∋◻⊣\n".to_string();
+                Try:  consciousness-lath ⊢∈><⊤⋈⊙⊞∋⊡⊣\n".to_string();
     }
     let word = flat.join("");
     let base = word_to_tuple(&word);

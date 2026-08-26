@@ -33,7 +33,7 @@ const TUPLE_CLINK_L8: &str = "𐑦𐑸𐑾𐑹𐑐𐑧𐑔𐑵⊙𐑫𐑳𐑟";
 const IMASM_OPS: [(&str, &str); 12] = [
     ("VINIT", "⊢"), ("TANCH", "⊣"), ("AFWD", ">"), ("AREV", "<"),
     ("CLINK", "⋈"), ("IMSCRIB", "⊙"), ("FSPLIT", "∈"), ("FFUSE", "∋"),
-    ("EVALT", "⊤"), ("EVALF", "⊥"), ("ENGAGR", "⊞"), ("IFIX", "◻"),
+    ("EVALT", "⊤"), ("EVALF", "⊥"), ("ENGAGR", "⊞"), ("IFIX", "⊡"),
 ];
 
 // ── Helper: glyph value lookup ───────────────────────────────
@@ -50,7 +50,7 @@ fn glyph_value(slot: &str, g: &str) -> f64 {
         "⊙" => match g {"𐑢"=>1.0,"⊙"=>2.0,"𐑮"=>3.0,"𐑻"=>4.0,"𐑣"=>5.0,_=>0.0},
         "⊥" => match g {"𐑓"=>1.0,"𐑒"=>2.0,"𐑖"=>3.0,"𐑫"=>4.0,_=>0.0},
         "⊞" => match g {"𐑙"=>1.0,"𐑕"=>2.0,"𐑳"=>3.0,_=>0.0},
-        "◻" => match g {"𐑷"=>1.0,"𐑴"=>2.0,"𐑭"=>3.0,"𐑟"=>4.0,_=>0.0},
+        "⊡" => match g {"𐑷"=>1.0,"𐑴"=>2.0,"𐑭"=>3.0,"𐑟"=>4.0,_=>0.0},
         _ => 0.0,
     }
 }
@@ -327,15 +327,15 @@ pub fn protocol_description(ptype: &ProtocolType) -> String {
     match ptype {
         ProtocolType::FrobeniusCycle =>
             "⊙ IMSCRIB: self-imscription → > AFWD: μ (multiply) → ∈ FSPLIT: δ (split) → \
-             ∋ FFUSE: μ∘δ → ◻ IFIX: identity closed cycle (μ∘δ=id)".into(),
+             ∋ FFUSE: μ∘δ → ⊡ IFIX: identity closed cycle (μ∘δ=id)".into(),
         ProtocolType::PericyclicCross =>
             "⊣ TANCH: two π-systems → ∋ FFUSE: μ(g⊗g)=1 cycloaddition → \
              ⊢ VINIT: σ-framework → ∈ FSPLIT: δ(1)=½(1⊗1+g⊗g) → ⋈ CLINK: closure".into(),
         ProtocolType::Pairing =>
-            "⊢ VINIT: seed state → ∋ FFUSE: μ(ψ⊗ψ) → ⊥ EVALF: ε (counit) → ◻ IFIX: fix ⟨ψ,ψ⟩".into(),
+            "⊢ VINIT: seed state → ∋ FFUSE: μ(ψ⊗ψ) → ⊥ EVALF: ε (counit) → ⊡ IFIX: fix ⟨ψ,ψ⟩".into(),
         ProtocolType::Monad =>
             "⊙ IMSCRIB → ⊢ VINIT: η(1) → ∋ FFUSE: μ∘η=id (left unit) → \
-             ⊙ IMSCRIB → ⊣ TANCH: η⊗id → ∋ FFUSE: μ∘(η⊗id)=id (right unit) → ◻ IFIX".into(),
+             ⊙ IMSCRIB → ⊣ TANCH: η⊗id → ∋ FFUSE: μ∘(η⊗id)=id (right unit) → ⊡ IFIX".into(),
         ProtocolType::Full => {
             format!("Phase 1: {}\nPhase 2: {}\nPhase 3: {}\nPhase 4: {}",
                 protocol_description(&ProtocolType::FrobeniusCycle),
@@ -389,7 +389,7 @@ pub fn sic_report() -> String {
     s.push_str(&format!("  Belnap B = XZ: |B⟩ = {:.4}|1⟩ + {:.4}|g⟩\n", b.a, b.b));
 
     // 6 Frobenius-dual pairs
-    s.push_str("  6 Dual Pairs: ⊢↔⊣, >↔<, ⋈↔⊤, ∈↔∋, ⊙↔⊥, ⊞↔◻\n");
+    s.push_str("  6 Dual Pairs: ⊢↔⊣, >↔<, ⋈↔⊤, ∈↔∋, ⊙↔⊥, ⊞↔⊡\n");
 
     // Born probabilities for the fiducial
     s.push_str("  Born probabilities P(i)=½|⟨B|ψ_i⟩|²:\n");

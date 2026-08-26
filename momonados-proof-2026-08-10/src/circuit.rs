@@ -44,7 +44,7 @@ const B4_ORDER: [B4; 4] = [B4::N, B4::T, B4::F, B4::B];
 /// The twelve-to-twelve correspondence, in the canonical axis order of
 /// `canonical_ig::PRIMITIVE_ORDER`. This mirrors `GeneticCode.lean`'s
 /// `primitiveToAA`, which is the statement of record; the axis order is
-/// `⊢⊣><⋈⊤∈∋⊙⊥⊞◻` and the amino acids are its promoted layer.
+/// `⊢⊣><⋈⊤∈∋⊙⊥⊞⊡` and the amino acids are its promoted layer.
 pub const PROMOTED_BY_AXIS: [(char, AminoAcid); 12] = [
     ('⊢', AminoAcid::Met),  // Dimensionality
     ('⊣', AminoAcid::Trp),  // Topology
@@ -57,7 +57,7 @@ pub const PROMOTED_BY_AXIS: [(char, AminoAcid); 12] = [
     ('⊙', AminoAcid::Gln),  // Criticality
     ('⊥', AminoAcid::Asp),  // Chirality
     ('⊞', AminoAcid::Lys),  // Stoichiometry
-    ('◻', AminoAcid::Glu),  // Winding
+    ('⊡', AminoAcid::Glu),  // Winding
 ];
 
 /// μ_RNA, first half: the glyph an amino acid carries, if any.
@@ -199,7 +199,7 @@ pub fn glyph_to_x86(g: Glyph) -> Option<(&'static str, &'static str)> {
         '<' => Some(("jmp", "0x401000")),
         '∈' => Some(("jne", "0x401000")),
         '⊙' => Some(("syscall", "")),
-        '◻' => Some(("add", "qword ptr [rax], rbx")),
+        '⊡' => Some(("add", "qword ptr [rax], rbx")),
         '⋈' => Some(("mov", "rax, rbx")),
         '⊤' => Some(("cmp", "rax, rbx")),
         '⊥' => Some(("sete", "al")),
@@ -235,7 +235,7 @@ pub fn glyph_to_wasm(g: Glyph) -> &'static str {
         '∈' => "if",
         '∋' => "end",
         '⊙' => "call_indirect",
-        '◻' => "i32.store",
+        '⊡' => "i32.store",
         '⋈' => "local.get",
         '⊤' => "i32.eq",
         '⊥' => "select",
@@ -253,7 +253,7 @@ pub fn wasm_to_glyph(op: &str) -> Option<Glyph> {
         "if" => '∈',
         "end" | "else" => '∋',
         "call_indirect" => '⊙',
-        o if o.ends_with(".store") => '◻',
+        o if o.ends_with(".store") => '⊡',
         o if o.starts_with("local.") || o.starts_with("global.") => '⋈',
         o if o.ends_with(".eq") || o.ends_with(".ne") || o.ends_with(".lt_s") => '⊤',
         "select" => '⊥',

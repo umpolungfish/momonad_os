@@ -60,7 +60,7 @@ fn tuple_prim(ig: &IgTuple, glyph: &str) -> Option<IgPrim> {
         "⊙" => Some(ig.phi),
         "⊥" => Some(ig.h),
         "⊞" => Some(ig.s),
-        "◻" => Some(ig.omega),
+        "⊡" => Some(ig.omega),
         _ => None,
     }
 }
@@ -131,7 +131,7 @@ pub fn t_seal(u: &Dialect, ig: &IgTuple) -> bool {
 }
 
 /// The Clay T_CEILING — all five dynamics primitives as ceilings at their
-/// canonical anchors (<≤𐑹 ⋈≤𐑐 ⊤≤𐑧 ⊥≤𐑫 ◻≤𐑭). This is the T convention of
+/// canonical anchors (<≤𐑹 ⋈≤𐑐 ⊤≤𐑧 ⊥≤𐑫 ⊡≤𐑭). This is the T convention of
 /// Clay_WitnessedClosure.lean / SIC_D12_WitnessVessel.lean and of the
 /// U8-U10 dialect gates.
 pub fn t_ceiling(ig: &IgTuple) -> bool {

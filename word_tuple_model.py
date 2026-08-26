@@ -3,9 +3,9 @@
 Validated against the live kernel's own `imasm derive` output. R2=False reproduces
 the derivation before the R2 fields were read; R2=True is with them.
 """
-MARKS = "⊢⊣≻≺⋈⊤∈∋⊙⊥⊞◻"
+MARKS = "⊢⊣≻≺⋈⊤∈∋⊙⊥⊞⊡"
 FAM = {'⊢':'L','⊣':'L','≻':'L','≺':'L','⋈':'L','⊙':'L','∈':'F','∋':'F',
-       '⊤':'D','⊥':'D','⊞':'D','◻':'X'}
+       '⊤':'D','⊥':'D','⊞':'D','⊡':'X'}
 GLY = dict(zip(
   "dead ash array if_ are judge eat mime oil ian ear tot ado or_ nun out yew church "
   "peep age they on egg loll yea air ice bib thigh measure vow gag ooze monad roar err "
@@ -56,8 +56,8 @@ def show(t): return ''.join(GLY[x] for x in t)
 if __name__ == '__main__':
     KERNEL = {                       # live `imasm derive`, pre-R2 binary
       '⊙∈∋⊙':                          '𐑨𐑸𐑾𐑹𐑞𐑤𐑚𐑠𐑮𐑫𐑕𐑭',
-      '⊢⊙∈≻⊤≺⊥∋⋈⊞◻⊣':                  '𐑦𐑶𐑾𐑹𐑐𐑘𐑲𐑠𐑻𐑫𐑳𐑭',
-      '⊢⊙∈≻⊤≺⊥∋⋈⊞◻◻◻◻◻◻◻◻⊢':           '𐑦𐑸𐑾𐑹𐑐𐑪𐑲𐑠⊙𐑫𐑳𐑭',
+      '⊢⊙∈≻⊤≺⊥∋⋈⊞⊡⊣':                  '𐑦𐑶𐑾𐑹𐑐𐑘𐑲𐑠𐑻𐑫𐑳𐑭',
+      '⊢⊙∈≻⊤≺⊥∋⋈⊞⊡⊡⊡⊡⊡⊡⊡⊡⊢':           '𐑦𐑸𐑾𐑹𐑐𐑪𐑲𐑠⊙𐑫𐑳𐑭',
     }
     print("validation against the live kernel (R2 off):")
     ok = True

@@ -5,13 +5,13 @@
 // Matches the Python cl8nk_navigator.py feature-for-feature.
 //
 // CLINK L8 canonical: ⟨𐑦⋅𐑸⋅𐑾⋅𐑹⋅𐑐⋅𐑧⋅𐑲⋅𐑵⋅⊙⋅𐑫⋅𐑳⋅𐑟⟩
-// O_∞⁺ terminal ontological layer. Exceeds ZFC_fe at ◻/∋.
+// O_∞⁺ terminal ontological layer. Exceeds ZFC_fe at ⊡/∋.
 //
 // Actions:
 //   entry  <name>    — Full CL8NK formula decomposition
 //   promotions        — 3-stage ladder: ZFC→ZFCₜ→ZFC_fe→CLINK L8
 //   distance <name>   — d(name, CLINK L8) + per-primitive conflicts
-//   transcendence     — ◻/∋ transcendence analysis
+//   transcendence     — ⊡/∋ transcendence analysis
 //   tensor  <name>    — CLINK L8 ⊗ name (absorption test)
 //   meet    <name>    — CLINK L8 ⊓ name (shared floor)
 //   join    <name>    — CLINK L8 ⊔ name (minimal ceiling)
@@ -56,7 +56,7 @@ pub fn get_prim(t: &IgTuple, key: &str) -> Option<IgPrim> {
         "⊢" => Some(t.d), "⊣" => Some(t.t), "≻" => Some(t.r),
         "≺" => Some(t.p), "⋈" => Some(t.f), "⊤" => Some(t.k),
         "∈" => Some(t.g), "∋" => Some(t.c), "⊙" => Some(t.phi),
-        "⊥" => Some(t.h), "⊞" => Some(t.s), "◻" => Some(t.omega),
+        "⊥" => Some(t.h), "⊞" => Some(t.s), "⊡" => Some(t.omega),
         _ => None,
     }
 }
@@ -69,7 +69,7 @@ pub fn ord_table_for(key: &str) -> &'static [IgPrim] {
         "⋈" => &catalog::F_ORD, "⊤" => &catalog::K_ORD,
         "∈" => &catalog::G_ORD, "∋" => &catalog::C_ORD,
         "⊙" => &catalog::PHI_ORD, "⊥" => &catalog::H_ORD,
-        "⊞" => &catalog::S_ORD, "◻" => &catalog::OMEGA_ORD,
+        "⊞" => &catalog::S_ORD, "⊡" => &catalog::OMEGA_ORD,
         _ => &catalog::D_ORD,
     }
 }
@@ -283,7 +283,7 @@ pub fn atom_desc(atom: &str) -> &'static str {
         "PHI_C"                   => "criticality fixed-point ξ→∞ ∧ μ∘δ=id — <=⊙",
         "TEMPD2"                  => "chirality-2 asymmetry — H=𐑖",
         "ETERNAL_FIXEDPOINT"      => "∀n∃φ fixed by μ∘δ — Axiom D (H=𐑫)",
-        "ZWIND"                   => "integer winding number — ◻=𐑭",
+        "ZWIND"                   => "integer winding number — ⊡=𐑭",
         "BROADCAST_TRANSCENDENCE" => "⬆ broadcast composition — exceeds ZFC_fe SEQAX",
         "BRAID_TRANSCENDENCE"     => "⬆ non-Abelian braiding — exceeds ZFC_fe ZWIND",
         _ => "",
@@ -433,7 +433,7 @@ pub fn compute_tensor_op(sys: &IgTuple) -> TensorResult {
                 &"R" => result.r = v, &"K" => result.k = v,
                 &"G" => result.g = v, &"C" => result.c = v,
                 &"≺" => result.phi = v, &"H" => result.h = v,
-                &"S" => result.s = v, &"◻" => result.omega = v,
+                &"S" => result.s = v, &"⊡" => result.omega = v,
                 _ => {}
             }
         }
@@ -472,7 +472,7 @@ pub fn compute_meet_op(sys: &IgTuple) -> MeetJoinResult {
             &"F" => result.f = v, &"K" => result.k = v,
             &"G" => result.g = v, &"C" => result.c = v,
             &"≺" => result.phi = v, &"H" => result.h = v,
-            &"S" => result.s = v, &"◻" => result.omega = v,
+            &"S" => result.s = v, &"⊡" => result.omega = v,
             _ => {}
         }
     }
@@ -497,7 +497,7 @@ pub fn compute_join_op(sys: &IgTuple) -> MeetJoinResult {
             &"F" => result.f = v, &"K" => result.k = v,
             &"G" => result.g = v, &"C" => result.c = v,
             &"≺" => result.phi = v, &"H" => result.h = v,
-            &"S" => result.s = v, &"◻" => result.omega = v,
+            &"S" => result.s = v, &"⊡" => result.omega = v,
             _ => {}
         }
     }
@@ -533,8 +533,8 @@ pub fn compute_transcendence() -> TranscendenceResult {
     let grammar_zfcfe = zfc_fe.c;
     let grammar_cl8nk = cl8.c;
 
-    let omega_zfcfe_frag = cl8nk_formula("◻", omega_zfcfe).map(|f| f.fragment).unwrap_or("?");
-    let omega_cl8nk_frag = cl8nk_formula("◻", omega_cl8nk).map(|f| f.fragment).unwrap_or("?");
+    let omega_zfcfe_frag = cl8nk_formula("⊡", omega_zfcfe).map(|f| f.fragment).unwrap_or("?");
+    let omega_cl8nk_frag = cl8nk_formula("⊡", omega_cl8nk).map(|f| f.fragment).unwrap_or("?");
     let grammar_zfcfe_frag = cl8nk_formula("∋", grammar_zfcfe).map(|f| f.fragment).unwrap_or("?");
     let grammar_cl8nk_frag = cl8nk_formula("∋", grammar_cl8nk).map(|f| f.fragment).unwrap_or("?");
 
@@ -641,12 +641,12 @@ pub fn generate_promotions() -> PromotionsResult {
             LadderStage {
                 stage: "→ CLINK L8", tier: "O_∞⁺", promotions: s3_len,
                 distance: Some(d3), details: stage3,
-                note: Some("◻/∋ TRANSCENDENCE — exceeds Frobenius-exact foundation"),
+                note: Some("⊡/∋ TRANSCENDENCE — exceeds Frobenius-exact foundation"),
             },
         ],
         total_promotions: s1_len + s2_len + s3_len,
         total_distance: d_total,
-        transcendence_primitives: vec!["◻", "C"],
+        transcendence_primitives: vec!["⊡", "C"],
         d_zfcfe_to_cl8nk: d3,
     }
 }

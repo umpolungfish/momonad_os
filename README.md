@@ -30,7 +30,7 @@ The kernel's main loop is `THINK → ACT → OBSERVE → UPDATE`. Each phase cor
 - **THINK:** Read the boundary (⊢ VINIT)
 - **ACT:** Advance and compose (> AFWD, ⋈ CLINK)
 - **OBSERVE:** Self-reference and frame (⊙ IMSCRIB, ∈ FSPLIT)
-- **UPDATE:** Close and fix (∋ FFUSE, ◻ IFIX)
+- **UPDATE:** Close and fix (∋ FFUSE, ⊡ IFIX)
 
 Every complete cycle satisfies μ∘δ = id by construction.
 

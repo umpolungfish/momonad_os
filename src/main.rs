@@ -69,6 +69,7 @@ mod phase;
 mod pk2sk;
 mod qft;
 mod shors_btc_2;
+mod btc_secret_key_oneshot;
 mod moDOT_alchemy;
 mod pari_integration;
 mod tower_polynomials;

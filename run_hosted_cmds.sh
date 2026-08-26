@@ -6,7 +6,7 @@
 # boot dominates the cost of any short command, which is why run_serial_cmds.sh
 # tells callers to batch. Here there is nothing to amortise.
 #
-# Usage: ./run_hosted_cmds.sh "sic d16" "weight ⊢∈⊤◻⊣" ...
+# Usage: ./run_hosted_cmds.sh "sic d16" "weight ⊢∈⊤⊡⊣" ...
 set -euo pipefail
 cd "$(dirname "$0")"
 

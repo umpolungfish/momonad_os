@@ -54,7 +54,7 @@ impl Token {
     /// is not invented. Every token is SYMBOLIC — no Latin initials, and nothing
     /// that already means something else in mathematics: VINIT ⊢ and TANCH ⊣ are
     /// the opening and closing boundary turnstiles, EVALT ⊤ and EVALF ⊥ the two
-    /// poles they evaluate, CLINK ⋈ the join, IFIX ◻ the box that closes, ENGAGR
+    /// poles they evaluate, CLINK ⋈ the join, IFIX ⊡ the box that closes, ENGAGR
     /// ⊞ the Belnap Both it holds, and the dyad is ∈ / ∋, membership in and out.
     /// The set is also the twelve-primitive alphabet: one glyph per axis, the same
     /// twelve, because the opcodes and the axes were always the same twelve.
@@ -80,7 +80,7 @@ impl Token {
             Token::Evalt => "⊤",
             Token::Evalf => "⊥",
             Token::Engagr => "⊞",
-            Token::Ifix => "◻",
+            Token::Ifix => "⊡",
             Token::Fsplit3 => "∈",
             Token::Ffuse3 => "∋",
             Token::Evali => "⊞",
@@ -178,7 +178,7 @@ impl Token {
             "EVALT" | "ET" | "⊤" => Token::Evalt,
             "EVALF" | "EF" | "⊥" => Token::Evalf,
             "ENGAGR" | "EG" | "⊞" => Token::Engagr,
-            "IFIX" | "IX" | "FIX" | "◻" => Token::Ifix,
+            "IFIX" | "IX" | "FIX" | "⊡" => Token::Ifix,
             "FSPLIT3" | "Fsplit3" | "F3" => Token::Fsplit3,
             "FFUSE3" | "Ffuse3" | "FF3" => Token::Ffuse3,
             "EVALI" => Token::Evali,

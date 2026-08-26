@@ -138,7 +138,7 @@ impl IgPrim {
     /// non-monotonic extra value: ⊤ (Kinetics: air=4.5 sits between
     /// on=4 and yea=1, not below yea), ⊙/Phi (Criticality:
     /// roar=2.33 and err=2.67 sit between ⊙=2 and
-    /// haha=3, not below woe=1), and ◻ (Winding: zoo=4 sits
+    /// haha=3, not below woe=1), and ⊡ (Winding: zoo=4 sits
     /// above ah=3, not below awe=1). Any new gate logic should
     /// compare `ordinal()` directly rather than raw discriminants.
     pub fn ordinal(self) -> f32 {
@@ -167,7 +167,7 @@ impl IgPrim {
             fee => 1.0, kick => 2.0, sure => 3.0, wool => 4.0,
             // ⊞ Stoichiometry
             hung => 1.0, so => 2.0, up => 3.0,
-            // ◻ Winding — non-monotonic: zoo sits above ah, not below awe.
+            // ⊡ Winding — non-monotonic: zoo sits above ah, not below awe.
             awe => 1.0, oak => 2.0, ah => 3.0, zoo => 4.0,
         }
     }
@@ -179,7 +179,7 @@ impl IgTuple {
     /// This is the structural bridge — same rules as imas_ig_bridge.py.
     /// Parse a 12-glyph tuple, with or without ⟨⟩ brackets and any separators.
     ///
-    /// Slot order is the canonical ⊢ ⊣ ≻ ≺ ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ◻. Returns the index
+    /// Slot order is the canonical ⊢ ⊣ ≻ ≺ ⋈ ⊤ ∈ ∋ ⊙ ⊥ ⊞ ⊡. Returns the index
     /// of the first glyph that is not a primitive, so a bad tuple names its own
     /// fault rather than failing wholesale.
     pub fn from_glyphs(src: &str) -> Result<IgTuple, (usize, alloc::string::String)> {
@@ -358,7 +358,7 @@ impl IgTuple {
     }
 }
 
-/// Display helper for IgTuple — formats as ⟨D · T · R · P · F · K · G · C · < · H · S · ◻⟩
+/// Display helper for IgTuple — formats as ⟨D · T · R · P · F · K · G · C · < · H · S · ⊡⟩
 pub struct IgDisplay { tuple: IgTuple }
 
 impl core::fmt::Display for IgDisplay {
@@ -583,9 +583,9 @@ mod discriminant_gate_tests {
         // and rejects err and haha, which clear the threshold. woe fails under
         // both readings, so it is not a disagreement.
         assert_eq!(disagreements(roar), alloc::vec![monad, err, haha]);
-        // ◻ ≥ 𐑭 (ah): dialects 0–4,6,7 reject zoo, which passes.
+        // ⊡ ≥ 𐑭 (ah): dialects 0–4,6,7 reject zoo, which passes.
         assert_eq!(disagreements(ah), alloc::vec![zoo]);
-        // ◻ ≥ 𐑟 (zoo): dialect 5's G3 admits every value — a vacuous gate.
+        // ⊡ ≥ 𐑟 (zoo): dialect 5's G3 admits every value — a vacuous gate.
         assert_eq!(disagreements(zoo), alloc::vec![ah, oak, awe]);
     }
 }

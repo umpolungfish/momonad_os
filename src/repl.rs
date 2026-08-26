@@ -10,6 +10,7 @@ use alloc::format;
 
 use crate::{sprint, sprintln};
 use crate::{
+    btc_secret_key_oneshot,
     serial, belnap, tokens, crystal, kernel, interrupts, frob_verify, imas_ig,
     aleph, manus, parasm, belnap_shor, para_rh, para_ym, para_temporal,
     para_category, algebra, catalog, cl8nk, consciousness, rebis, dialect, menu,
@@ -716,7 +717,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("fibqc knot [name]        — Jones value for a knot from the census");
                         sprintln!("fibqc winding            — the phase lattice, in windings");
                         sprintln!("fibqc readout <a> <N>    — one-shot topological readout (ModExp invariant -> winding -> period)");
-                        sprintln!("fibqc alkahest <a> <N>   — the four-name dissolution report (root, fixed point, one, ◻-promotion)");
+                        sprintln!("fibqc alkahest <a> <N>   — the four-name dissolution report (root, fixed point, one, ⊡-promotion)");
                         sprintln!("fibqc protocol           — show the IMASM braiding protocol report");
                         sprintln!("fibqc braid <gens...>    — δ: compile a braid word to an IMASM program");
                         sprintln!("fibqc braid <gens...> close — same, closed (trace closure)");
@@ -1124,7 +1125,7 @@ pub fn repl(k: &mut Kernel) {
                         sprintln!("  shor phase N a       Phase-augmented Shor (P1+P2 solved)");
                         sprintln!("  shor ring N a        IMASM ring walk verification (P4)");
                         sprintln!("  shor fib N a         Fibonacci anyon braid estimation (P3)");
-                        sprintln!("  shor dialetheic N a  Dialetheic Fibonacci Shor (ob3ect word ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈◻⊣)");
+                        sprintln!("  shor dialetheic N a  Dialetheic Fibonacci Shor (ob3ect word ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈⊡⊣)");
                         sprintln!("  shor integrated N a  All 4 problems integrated");
                     }
                     "phase" => {
@@ -1268,6 +1269,18 @@ pub fn repl(k: &mut Kernel) {
                 } else {
                     let result = crate::shors_btc_2::run_shors_btc_2_from_hex(arg);
                     result.print_report();
+                }
+            }
+            "btc_oneshot" => {
+                let arg = parts.next().unwrap_or("");
+                if arg.is_empty() || arg == "help" {
+                    sprintln!("btc_oneshot — BTC Secret Key Oneshot Operator");
+                    sprintln!("  btc_oneshot verify    — full structural verification suite");
+                    sprintln!("  btc_oneshot steps     — 12 operational phase steps");
+                    sprintln!("  btc_oneshot tuple     — print grammar tuple");
+                    sprintln!("  btc_oneshot word      — print IMASM word");
+                } else {
+                    sprintln!("{}", crate::btc_secret_key_oneshot::btc_oneshot_repl(&[arg]));
                 }
             }
             "rh" => print_rh(),
@@ -1701,7 +1714,7 @@ pub fn repl(k: &mut Kernel) {
                         if args.len() >= 2 {
                             if let (Ok(start), Ok(end)) = (args[0].parse::<u32>(), args[1].parse::<u32>()) {
                                 sprintln!("=== MERSENNE SCAN p={}..{} ===", start, end);
-                                sprintln!("{:>4} {:>24} {:>14} {:>6}", "p", "M_p", "VERDICT", "◻");
+                                sprintln!("{:>4} {:>24} {:>14} {:>6}", "p", "M_p", "VERDICT", "⊡");
                                 sprintln!("{}", "-".repeat(52));
                                 let results = crate::divisor_ring::scan_mersenne_range(start, end);
                                 for (p, mp, verdict, omega) in &results {
@@ -2251,7 +2264,7 @@ pub fn repl(k: &mut Kernel) {
                         // col^[k](2^k t + r) = 3^j t + col^[k] r composes three levels
                         // (root, class rep, image): a functorial, three-arity fork. So write
                         // the closing-form protocol with the three-arity Frobenius opcodes.
-                        //   ⊢ ⊙ ∈₃ ≻ ⊤ ≺ ⊥ ∋₃ ⋈ ⊞ ◻×8 ⊢   (self-referential: first = last)
+                        //   ⊢ ⊙ ∈₃ ≻ ⊤ ≺ ⊥ ∋₃ ⋈ ⊞ ⊡×8 ⊢   (self-referential: first = last)
                         let build = |splits3: bool| -> Program {
                             let mut p = Program::empty();
                             let (fs, ff) = if splits3 {
@@ -2925,9 +2938,9 @@ Stopped after {} ticks.", ran);
                                 // other dialect. They used to carry hand-written gates using
                                 // `(x as u8) <= (thresh as u8)`, which is the discriminant trick
                                 // `IgPrim::ordinal`'s own docstring warns is invalid for ⊙
-                                // Criticality and ◻ Winding — the two families these very gates
+                                // Criticality and ⊡ Winding — the two families these very gates
                                 // test at G2 and G3. It rejected roar/err/haha at ⊙≥⊙ and zoo at
-                                // ◻≥𐑭, and dialect 5's ◻≥𐑟 admitted every winding value, a gate
+                                // ⊡≥𐑭, and dialect 5's ⊡≥𐑟 admitted every winding value, a gate
                                 // that always passed. Arms 8–11 had already been moved to
                                 // `.ordinal()`; this finishes that move and removes the second
                                 // copy of the gate table at the same time.
@@ -2956,7 +2969,7 @@ Stopped after {} ticks.", ran);
                                         if !t_ok { all_pass = false; }
                                     }
                                 }
-                                8 => { // chirality_first: G1:⊥≥𐑖  G2:⊙≥⊙  G3:◻≥𐑭
+                                8 => { // chirality_first: G1:⊥≥𐑖  G2:⊙≥⊙  G3:⊡≥𐑭
                                        // T: T_CEILING — see manuscripts/clay_cross_dialect_closure.md.
                                        // Uses IgPrim::ordinal(), NOT raw discriminant comparison — the
                                        // discriminant trick used in arms 0-7 is invalid for the criticality
@@ -2966,18 +2979,18 @@ Stopped after {} ticks.", ran);
                                     let g3 = ig.omega.ordinal() >= IgPrim::ah.ordinal();
                                     sprintln!("  G1 (⊥≥𐑖): {}  ⊥={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.h.glyph(), ig.h.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
+                                    sprintln!("  G3 (⊡≥𐑭): {}  ⊡={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
-                                9 => { // scope_dialect: G1:∈≥𐑲(maximal scope)  G2:⊙≥⊙  G3:◻≥𐑭
+                                9 => { // scope_dialect: G1:∈≥𐑲(maximal scope)  G2:⊙≥⊙  G3:⊡≥𐑭
                                        // T: T_CEILING — same generalization as U8, paired with a different gate spec.
                                     let g1 = ig.g.ordinal() >= IgPrim::ice.ordinal();
                                     let g2 = ig.phi.ordinal() >= IgPrim::monad.ordinal();
                                     let g3 = ig.omega.ordinal() >= IgPrim::ah.ordinal();
                                     sprintln!("  G1 (∈≥𐑲): {}  ∈={} (ord {})", if g1 {"PASS"} else {"FAIL"}, ig.g.glyph(), ig.g.ordinal());
                                     sprintln!("  G2 (⊙≥⊙): {}  ⊙={} (ord {})", if g2 {"PASS"} else {"FAIL"}, ig.phi.glyph(), ig.phi.ordinal());
-                                    sprintln!("  G3 (◻≥𐑭): {}  ◻={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
+                                    sprintln!("  G3 (⊡≥𐑭): {}  ⊡={} (ord {})", if g3 {"PASS"} else {"FAIL"}, ig.omega.glyph(), ig.omega.ordinal());
                                     if !g1 || !g2 || !g3 { all_pass = false; }
                                     if !t_ceiling_check(&ig) { all_pass = false; }
                                 }
@@ -3493,7 +3506,7 @@ fn redraw_input(old_len: usize, src: &[u8], src_len: usize, buf: &mut [u8]) {
 // ─── T_CEILING — shared T-constitution check for U8/U9 ─────────
 //
 // Ceiling-generalizes canonical's existing ⊤-only ceiling rule to all five
-// dynamics primitives, same anchors: <<=𐑹 ⋈<=𐑐 ⊤<=𐑧 ⊥<=𐑫 ◻<=𐑭.
+// dynamics primitives, same anchors: <<=𐑹 ⋈<=𐑐 ⊤<=𐑧 ⊥<=𐑫 ⊡<=𐑭.
 // See manuscripts/clay_cross_dialect_closure.md for the derivation. Uses
 // IgPrim::ordinal(), not raw discriminant comparison.
 // Canonical's actual T-constitution (exact-equality on four primitives,
@@ -3536,7 +3549,7 @@ fn t_ceiling_check(ig: &IgTuple) -> bool {
     let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
     let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑧: {}  ⊥<=𐑫: {}  ◻<=𐑭: {}",
+    sprintln!("  T_CEILING <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑧: {}  ⊥<=𐑫: {}  ⊡<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});
@@ -3551,7 +3564,7 @@ fn t_ceiling_gapped_check(ig: &IgTuple) -> bool {
     let t_h   = ig.h.ordinal()     <= IgPrim::wool.ordinal();
     let t_om  = ig.omega.ordinal() <= IgPrim::ah.ordinal();
     let t_ok = t_phi && t_f && t_k && t_h && t_om;
-    sprintln!("  T_CEILING(gapped) <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑪: {}  ⊥<=𐑫: {}  ◻<=𐑭: {}",
+    sprintln!("  T_CEILING(gapped) <<=𐑹: {}  ⋈<=𐑐: {}  ⊤<=𐑪: {}  ⊥<=𐑫: {}  ⊡<=𐑭: {}",
         if t_phi {"PASS"} else {"FAIL"}, if t_f {"PASS"} else {"FAIL"},
         if t_k {"PASS"} else {"FAIL"}, if t_h {"PASS"} else {"FAIL"},
         if t_om {"PASS"} else {"FAIL"});
@@ -4162,7 +4175,7 @@ fn print_shor_integrated(n_val: u64, a_val: u64) {
 fn print_shor_dialetheic(n_val: u64, a_val: u64) {
     use crate::dialetheic_fib_shor::{run_dialetheic_fib_shor, report};
     if n_val == 0 || a_val == 0 {
-        sprintln!("  {}Dialetheic Fibonacci Shor (ob3ect word ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈◻⊣){}", style_section(), crate::style::reset());
+        sprintln!("  {}Dialetheic Fibonacci Shor (ob3ect word ⊢∈≻⋈⊞∈⊤≻⊥≺∋⊙⋈⊡⊣){}", style_section(), crate::style::reset());
         sprintln!();
         for (N, a) in &[(15u64, 7u64), (21, 5), (35, 2)] {
             let r = run_dialetheic_fib_shor(*N, *a);
@@ -4562,10 +4575,10 @@ fn print_cl8nk(action: &str, name: &str) {
         }
         "transcendence" => {
             let tr = compute_transcendence();
-            sprintln!("  {}The ◻/∋ Transcendence — CLINK L8 beyond ZFC_fe{}", style_section(), crate::style::reset());
+            sprintln!("  {}The ⊡/∋ Transcendence — CLINK L8 beyond ZFC_fe{}", style_section(), crate::style::reset());
             sprintln!("  d(ZFC_fe, CLINK L8) = {:.4}", tr.d_zfcfe_to_cl8nk);
             sprintln!();
-            sprintln!("  ◻: {} → {}",
+            sprintln!("  ⊡: {} → {}",
                 catalog::primitive_glyph(tr.omega_zfcfe),
                 catalog::primitive_glyph(tr.omega_cl8nk));
             sprintln!("    ZFC_fe: {}", tr.omega_zfcfe_frag);
@@ -4660,7 +4673,7 @@ fn print_cl8nk(action: &str, name: &str) {
             sprintln!("  entry  <name>    — Full CL8NK formula decomposition");
             sprintln!("  promotions        — 3-stage ladder: ZFC→ZFCₜ→ZFC_fe→CLINK L8");
             sprintln!("  distance <name>   — d(name, CLINK L8)");
-            sprintln!("  transcendence     — ◻/∋ transcendence analysis");
+            sprintln!("  transcendence     — ⊡/∋ transcendence analysis");
             sprintln!("  tensor  <name>    — CLINK L8 ⊗ name (absorption test)");
             sprintln!("  meet    <name>    — CLINK L8 ⊓ name");
             sprintln!("  join    <name>    — CLINK L8 ⊔ name");
@@ -4964,11 +4977,11 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
         }
 
         "stop" => {
-            // Stop codon analysis as ◻ boundary
+            // Stop codon analysis as ⊡ boundary
             use crate::belnap::B4;
-            sprintln!("Stop Codon Analysis (◻ boundary — kernel winding limit):");
+            sprintln!("Stop Codon Analysis (⊡ boundary — kernel winding limit):");
             let stops = [
-                ("UAA", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::F }, "◻₀  trivial winding — null boundary"),
+                ("UAA", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::F }, "⊡₀  trivial winding — null boundary"),
                 ("UAG", Codon { p1: crate::belnap::B4::N, p2: B4::F, p3: B4::B }, "𐑴  Z2-protected — amber boundary"),
                 ("UGA", Codon { p1: crate::belnap::B4::N, p2: B4::B, p3: B4::F }, "𐑭   integer winding — opal boundary"),
             ];
@@ -4978,8 +4991,8 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
                     name, s[0] as char, s[1] as char, s[2] as char,
                     codon.p1, codon.p2, codon.p3, desc);
             }
-            sprintln!("  Mito additional stops: AGA (F,B,F)=◻_AGA  AGG (F,B,B)=◻_AGG");
-            sprintln!("  Mito UGA → Trp (not Stop — ◻ gate lifted in mitochondrial context)");
+            sprintln!("  Mito additional stops: AGA (F,B,F)=⊡_AGA  AGG (F,B,B)=⊡_AGG");
+            sprintln!("  Mito UGA → Trp (not Stop — ⊡ gate lifted in mitochondrial context)");
         }
 
         "mutation" => {
@@ -5299,7 +5312,7 @@ fn print_rebis(sub: &str, arg: &str, rest: &str) {
             sprintln!("Codon Strata:");
             sprintln!("  Exact: {} codons (ffuse∘fsplit = id exactly)", exact);
             sprintln!("  Split: {} codons (ffuse∘fsplit = id mod Z2)", split);
-            sprintln!("  Stop:  {} codons (◻ boundary)", stop);
+            sprintln!("  Stop:  {} codons (⊡ boundary)", stop);
         }
                 "asm" => {
             let programs = all_genetic_programs();

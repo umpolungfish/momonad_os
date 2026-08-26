@@ -13,11 +13,11 @@ cd "$(dirname "$0")/../.."
 RUN=./run_hosted_cmds.sh
 
 declare -A WORD=(
- [rh_positivity]="⊢∈≻⊤≺⊥⊞⋈∋◻⊙⊣"
- [bsd_parity]="⊢∈≻⊤≺⊥⋈⊙⊞∋◻⊣"
- [hodge_parity]="⊢∈⊥≺⊤≻⋈⊞∋⊙◻⊣"
- [collatz_or_closure]="⊢∈≻⊤≺⊥⋈⊞⊙∋◻⋈⊙⊣"
- [collatz_named_move]="⊢∈⊤≻⋈⊥≺⋈⊞◻⊙∋⋈∈⊤≻⊥≺⊞◻∋⊣"
+ [rh_positivity]="⊢∈≻⊤≺⊥⊞⋈∋⊡⊙⊣"
+ [bsd_parity]="⊢∈≻⊤≺⊥⋈⊙⊞∋⊡⊣"
+ [hodge_parity]="⊢∈⊥≺⊤≻⋈⊞∋⊙⊡⊣"
+ [collatz_or_closure]="⊢∈≻⊤≺⊥⋈⊞⊙∋⊡⋈⊙⊣"
+ [collatz_named_move]="⊢∈⊤≻⋈⊥≺⋈⊞⊡⊙∋⋈∈⊤≻⊥≺⊞⊡∋⊣"
 )
 # kernel crystal, kernel parity ≺, design parity ≺ (from the ob3ect grounding)
 declare -A EXPECT=(
@@ -48,7 +48,7 @@ echo
 echo "--- the self-encode type carries parity or' AND winding ℤ, not Z2 ---"
 echo "--- (16840174 is its address in the KERNEL's numbering; 6734591 is the"
 echo "---  same type in the boundary-cell numbering. Never mix the two.) ---"
-$RUN "crystal 16840174" 2>/dev/null | grep -E '≺:|◻:' | sed 's/^ */  ordinal /'
+$RUN "crystal 16840174" 2>/dev/null | grep -E '≺:|⊡:' | sed 's/^ */  ordinal /'
 
 [ $fail -eq 0 ] && echo && echo "PROMOTIONS: PASS" || { echo; echo "PROMOTIONS: FAIL"; }
 exit $fail

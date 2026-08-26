@@ -12,7 +12,7 @@
 //   - The 12-word seed phrase maps to 12 IMASM glyph slots
 //   - The phase lattice = tenths of a winding (Fibonacci anyon native phase)
 //   - The 2:1 B-bias/T-bias coherence ratio from Belnap Shor is preserved
-//   - The ob3ect's glyph word ⊢⊣>⋈⊤∈∋⊙⊥<⊞◻⊣ encodes the BIP39 derivation pipeline
+//   - The ob3ect's glyph word ⊢⊣>⋈⊤∈∋⊙⊥<⊞⊡⊣ encodes the BIP39 derivation pipeline
 //   - THIS_bip39_addresses.tsv provides the address layer: word → 12-mark address (base-27 → base-12)
 //   - bip39_inscriptions.tsv provides the imscription layer: word index → 12-glyph tuple (deterministic)
 #![allow(dead_code)]
@@ -49,7 +49,7 @@ pub const GROVER_ITERATIONS: u32 = BIP39_GAP_BITS / 2;
 pub const GROVER_THRESHOLD_BITS: u32 = 150;
 
 // BIP39 derivation pipeline glyph word from ob3ect
-pub const BIP39_DERIVATION_WORD: &str = "⊢⊣≻⋈⊤∈∋⊙⊥≺⊞◻⊣";
+pub const BIP39_DERIVATION_WORD: &str = "⊢⊣≻⋈⊤∈∋⊙⊥≺⊞⊡⊣";
 
 // Phase lattice = tenths of a winding (Fibonacci anyon native phase)
 pub const PHASE_TENTHS: &str = "phase lattice = tenths of a winding";
@@ -456,7 +456,7 @@ fn set_axis(t: &IgTuple, axis: &str, v: IgPrim) -> IgTuple {
         "Phi" | "⊙" => n.phi = v,
         "H" | "⊥" => n.h = v,
         "S" | "⊞" => n.s = v,
-        "Omega" | "◻" => n.omega = v,
+        "Omega" | "⊡" => n.omega = v,
         _ => {}
     }
     n
@@ -2631,7 +2631,7 @@ pub fn bip39_pipeline_phases() -> Vec<(&'static str, &'static str)> {
         ("⊥", "Negative state: reversal infeasible"),
         ("≺", "Reverse morphism: bulk → boundary"),
         ("⊞", "Paradice: derivation + protection coexist"),
-        ("◻", "Permanent record fixation"),
+        ("⊡", "Permanent record fixation"),
         ("∋", "Fuse arms to B4 verdict"),
         ("⊙", "Self-referential key pair identity"),
         ("⊣", "Terminal anchor with resolved state"),
@@ -2654,7 +2654,7 @@ pub fn bip39_hex_to_tuple(hex: &str) -> IgTuple {
 /// Compute the twelve-mark address for a BIP39 word (base-27 → base-12)
 fn bip39_word_to_address(word: &str) -> String {
     let n = bip39_index_of(word);
-    let marks = ['⊢', '⊣', '≻', '≺', '⋈', '⊤', '∈', '∋', '⊙', '⊥', '⊞', '◻'];
+    let marks = ['⊢', '⊣', '≻', '≺', '⋈', '⊤', '∈', '∋', '⊙', '⊥', '⊞', '⊡'];
     let mut out = String::new();
     for i in (0..12).rev() {
         out.push(marks[((n / 12u64.pow(i as u32)) % 12) as usize]);
@@ -2839,7 +2839,7 @@ BIP39-SIC integration:
   - 2048-word BIP39 wordlist <-> d=2048 SIC-POVM Hilbert space
   - Phase lattice = tenths of a winding
   - Belnap coherence ratio: 2:1 (B-bias:T-bias)
-  - Derivation pipeline glyph word: ⊢⊣>⋈⊤∈∋⊙⊥<⊞◻⊣
+  - Derivation pipeline glyph word: ⊢⊣>⋈⊤∈∋⊙⊥<⊞⊡⊣
   - Address TSV: THIS_bip39_addresses.tsv (word -> 12-mark address)
   - Inscription TSV: bip39_inscriptions.tsv / bip39_tuples.tsv (word -> glyph tuple)
 

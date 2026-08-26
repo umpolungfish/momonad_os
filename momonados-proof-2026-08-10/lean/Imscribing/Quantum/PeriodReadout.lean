@@ -9,8 +9,8 @@ exponentiation orbit x ↦ a·x closes on itself.
 
 In the Alkahest reading this is the unmoved mover: the orbit map closes
 exactly at r, and r is minimal — μ∘δ=id over the orbit. The readout is the
-dissolution: the non-Abelian braid word (◻ = non-Abelian) is reduced to the
-integer period (◻ = integer winding), the alkahest vessel's ◻-promotion.
+dissolution: the non-Abelian braid word (⊡ = non-Abelian) is reduced to the
+integer period (⊡ = integer winding), the alkahest vessel's ⊡-promotion.
 
 What is formalized here:
 

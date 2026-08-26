@@ -1,5 +1,5 @@
 -- IGProtocol scaffold: VINIT → AFWD → IFIX → FSPLIT → EVALT → AFWD → CLINK → IFIX → EVALF → AREV → CLINK → IFIX → FFUSE → FSPLIT → EVALT → AFWD → CLINK → IFIX → EVALF → AREV → CLINK → IFIX → FFUSE → FSPLIT → EVALT → AFWD → CLINK → IFIX → ENGAGR → AFWD → AREV → AFWD → AREV → EVALF → FFUSE → FSPLIT → EVALT → AFWD → CLINK → IFIX → EVALF → AREV → CLINK → IFIX → FFUSE → FSPLIT → EVALT → AFWD → CLINK → IFIX → EVALF → AREV → CLINK → IFIX → FFUSE → FSPLIT → EVALT → AFWD → CLINK → IFIX → EVALF → AREV → CLINK → IFIX → FFUSE → FSPLIT → EVALT → IMSCRIB → AFWD → CLINK → IFIX → EVALF → AREV → CLINK → IFIX → FFUSE → FSPLIT → EVALT → IMSCRIB → AFWD → CLINK → IFIX → EVALF → AREV → CLINK → IFIX → FFUSE → TANCH
--- Class: obtaining ∈⊢⊥<◻><⊞∈⊙⊣<⋈⊞⊣<<>⊢∋⊞⊢⊣<∋∋⊥∈<⊣⊞<⊣◻∋⋈⊣<⊤⊞⊣⊣⊥∈∋⊤⊢⊣◻<◻>⋈⋈>∋⊙⊣⊙⊤∈⊣<⊢ from <⊤⊤⋈⊤⊢⊥⊢∈>⊢⊞⋈⊣⊙>>⊥⊢<◻⊥⊢>⊣>◻∈<⊥⊤⊢<><⊢⊙∈>∋⊣⋈⊥∋⊣⋈⋈<⊣⊥⊞⊣⊤⋈>◻⊢⊣⋈∋⊢⊤⊣>⊥⊙∈⊤⊢∋>⊤⊢⋈<⋈⊞<∋◻⊞⊣>>><⊤<∋⊢⊢◻∋∈∈⊙⊢⊞<⊤⊙⊣⊙⊥⊞>∋∋∈⊥<>∋<∋⊤⋈∋⊞>⋈∋∈⊥⊞⊙⊙⊢
+-- Class: obtaining ∈⊢⊥<⊡><⊞∈⊙⊣<⋈⊞⊣<<>⊢∋⊞⊢⊣<∋∋⊥∈<⊣⊞<⊣⊡∋⋈⊣<⊤⊞⊣⊣⊥∈∋⊤⊢⊣⊡<⊡>⋈⋈>∋⊙⊣⊙⊤∈⊣<⊢ from <⊤⊤⋈⊤⊢⊥⊢∈>⊢⊞⋈⊣⊙>>⊥⊢<⊡⊥⊢>⊣>⊡∈<⊥⊤⊢<><⊢⊙∈>∋⊣⋈⊥∋⊣⋈⋈<⊣⊥⊞⊣⊤⋈>⊡⊢⊣⋈∋⊢⊤⊣>⊥⊙∈⊤⊢∋>⊤⊢⋈<⋈⊞<∋⊡⊞⊣>>><⊤<∋⊢⊢⊡∋∈∈⊙⊢⊞<⊤⊙⊣⊙⊥⊞>∋∋∈⊥<>∋<∋⊤⋈∋⊞>⋈∋∈⊥⊞⊙⊙⊢
 -- Fingerprint: sig=(39,16,17,16)
 --   self_ref=False | frobenius_order=3
 --   dialetheia_complete=True | period=88
