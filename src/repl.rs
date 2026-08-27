@@ -2100,9 +2100,18 @@ pub fn repl(k: &mut Kernel) {
                             Ok(t) => {
                                 let prog = crate::sequence::build_via_substrate(
                                     &t, 12, t.t == crate::imas_ig::IgPrim::are, 3);
+                                let word = crate::belnap_ring_shor::glyphs_from_program(&prog);
                                 sprintln!("tuple: {}", t.display());
-                                sprintln!("word:  {}",
-                                    crate::belnap_ring_shor::glyphs_from_program(&prog));
+                                sprintln!("word:  {}", word);
+                                // Every word a tool hands back gets the same standing audit a
+                                // proof-in-progress gets: cycled, weighed, banked, and checked
+                                // for a repair — served here rather than left for whoever reads
+                                // the word to remember to ask for separately.
+                                sprintln!("\n-- word instruments, run on the above --");
+                                crate::lattice_flow::weight_report(&word);
+                                crate::lattice_flow::banked_report(&word);
+                                crate::lattice_flow::cycle_report(&word);
+                                crate::lattice_flow::insert_report(&word);
                             }
                             Err((i, g)) => sprintln!("imasm write: {} at slot {}", g, i),
                         }
@@ -2113,10 +2122,17 @@ pub fn repl(k: &mut Kernel) {
                             Ok(prog) => {
                                 let t = IgTuple::from_snapshot(
                                     &crate::kernel::self_imscribe(&prog));
-                                sprintln!("word:  {}",
-                                    crate::belnap_ring_shor::glyphs_from_program(&prog));
+                                let word = crate::belnap_ring_shor::glyphs_from_program(&prog);
+                                sprintln!("word:  {}", word);
                                 sprintln!("tuple: {}", t.display());
                                 sprintln!("crystal: {}", t.crystal_address());
+                                // Same standing audit as `imasm write`: served automatically,
+                                // not gated on the crystal address looking fine.
+                                sprintln!("\n-- word instruments, run on the above --");
+                                crate::lattice_flow::weight_report(&word);
+                                crate::lattice_flow::banked_report(&word);
+                                crate::lattice_flow::cycle_report(&word);
+                                crate::lattice_flow::insert_report(&word);
                             }
                             Err((i, c)) => {
                                 if crate::belnap_ring_shor::Glyph::from_char(c).is_some() {

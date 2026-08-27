@@ -1,7 +1,17 @@
-vox compile <seq> now runs the RNA<->protein pipeline both ways from one entry point, with real fold info on both ends — this was open work: RNA/DNA in already had a real translator (rebis::translate) and a real fold predictor (rebis::fold's Chou-Fasman secondary structure and heuristic tertiary contacts), and protein in already had real reverse translation with full codon degeneracy (rebis::genetics), but they lived under two different commands, the reverse direction dropped fold info entirely, and neither carried real 3D coordinates.
+Serve the word instruments automatically after imasm write and imasm derive
 
-red-hot_rebis already had the piece that was missing: rhr_p4rky/serpent_rod_v2.py's B4-Ramachandran-NeRF backbone construction and pdb_writer.py's PDB record formatting. Both are ported faithfully into a new rebis/fold3d.rs — same 16-entry Ramachandran table keyed by B4 transitions, same bond lengths and angles, same internal-to-Cartesian placement, same ATOM/HELIX/SHEET/TER layout. One real correction on the way in: the Python source indexes its B4 path per-nucleotide but reads it with the per-residue loop index, an off-by-factor-of-3 mismatch; here every residue gets its own real B4 (the first position of the codon that produced it), so the lookup is direct instead of carrying that mismatch forward.
+Chasing the efl_affirm bank leak by hand this session meant running weight,
+banked, cycle and insert as four separate commands after imasm derive handed
+back a word. That is exactly backwards: those four questions apply to any
+word a tool outputs, not only the ones I happen to go looking at by hand.
 
-Also ported: red-hot_rebis's _compute_preferred_codons, the Frobenius-exact-stratum codon choice (prefer the position-3 C variant within whichever exact or four-fold-degenerate tier applies) — now rebis::genetics::preferred_codon_for_aa, used by vox compile's protein-to-RNA direction instead of the arbitrary first-in-enumeration pick rebis reverse still uses (left untouched, no regression risk to existing behavior).
+imasm write and imasm derive now run all four automatically on the word they
+just produced and print the result under the tuple and crystal address,
+instead of leaving it to whoever reads the word to remember to ask. Nothing
+here gates on the answer, closing, open, banked or not, still prints; the
+point is that the information is served, not that anything blocks on it.
 
-vox compile auto-detects direction from the input alphabet (pure A/C/G/T/U reads as nucleic acid, anything else as protein codes), and --pdb writes a real PDB file — checked, not assumed, to round-trip through mOMonadOS's own PDB reader (rebis::pdb::parse_pdb_ca_atoms): same atom count, residue names, chain, residue numbers, and 3D coordinates back out. Five new tests in fold3d.rs, all passing; full suite 259 passed, 0 failed in the main binary, no regressions.
+Built and confirmed against a live word with a real banked-count defect: the
+derive output now shows the movement, the exposed clear, the ROTAT orbit and
+the five one-glyph repairs in one call, where it used to show only the word,
+the tuple and the crystal address.
