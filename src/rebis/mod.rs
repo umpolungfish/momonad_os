@@ -31,6 +31,7 @@ pub mod codon;
 pub mod genetics;
 pub mod translate;
 pub mod fold;
+pub mod fold3d;
 pub mod frob_filter;
 pub mod hadron;
 pub mod serpent;

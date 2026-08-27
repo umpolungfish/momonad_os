@@ -351,6 +351,16 @@ pub fn repl(k: &mut Kernel) {
                     sprintln!("vox rna <seq> [code] — lift a coding sequence; code is");
                     sprintln!("                       standard or mitochondrial");
                     sprintln!("vox peptide <seq>    — lift a residue sequence");
+                    sprintln!("vox compile <seq> [--code standard|mitochondrial] [--pdb <path>]");
+                    sprintln!("                     — the same pipeline, both ends: RNA/DNA in gives");
+                    sprintln!("                       a compiled protein with real fold info (Chou-");
+                    sprintln!("                       Fasman secondary structure, heuristic tertiary");
+                    sprintln!("                       contacts, a real 3D backbone via B4-Ramachandran-");
+                    sprintln!("                       NeRF); protein in gives RNA/DNA back out, with");
+                    sprintln!("                       full codon degeneracy and the SAME fold info");
+                    sprintln!("                       computed on the input. Input alphabet auto-");
+                    sprintln!("                       detects the direction. --pdb writes a real PDB");
+                    sprintln!("                       structure file, readable back by `rebis pdb`.");
                     sprintln!("vox run <file> [--argv a,b]");
                     sprintln!("                     — run the whole file as a real process from");
                     sprintln!("                       its own entry point: a real argv/envp/auxv");
@@ -448,6 +458,7 @@ pub fn repl(k: &mut Kernel) {
                                 sprintln!("vox classify <mnemonic> [operands]");
                             }
                         }
+                        "compile" => vox_compile(&rest[1..]),
                         "run" => vox_run_symbol(&rest[1..]),
                         other => sprintln!("vox has no `{}`; try `vox help`", other),
                     }
@@ -6103,4 +6114,167 @@ fn vox_run_symbol(args: &[alloc::string::String]) {
 #[cfg(not(feature = "hosted"))]
 fn vox_run_symbol(_args: &[alloc::string::String]) {
     sprintln!("vox run needs a host filesystem; not available in the kernel build");
+}
+
+#[cfg(feature = "hosted")]
+fn vox_write_pdb_file(path: &str, contents: &str) {
+    match std::fs::write(path, contents.as_bytes()) {
+        Ok(()) => sprintln!("PDB written to {}", path),
+        Err(e) => sprintln!("Could not write PDB to {}: {}", path, e),
+    }
+}
+
+#[cfg(not(feature = "hosted"))]
+fn vox_write_pdb_file(_path: &str, _contents: &str) {
+    sprintln!("--pdb needs a host filesystem; not available in the kernel build");
+}
+
+/// `vox compile <seq> [--code standard|mitochondrial] [--pdb <path>]`
+///
+/// One entry point, both directions of the same pipeline. RNA/DNA in:
+/// translate (rebis::translate::run_pipeline_table) then fold (rebis::fold::
+/// fold_sequence for secondary/tertiary, rebis::fold3d for the real 3D
+/// backbone). Protein in: reverse-translate with the Frobenius-preferred
+/// codon per residue (rebis::genetics::preferred_codon_for_aa, not the
+/// arbitrary first-in-enumeration pick `rebis reverse` uses) and run the
+/// SAME fold on the input protein, so the "vice versa" direction carries
+/// fold info too. Direction is auto-detected from the input alphabet: pure
+/// A/C/G/T/U reads as nucleic acid, anything else as protein codes.
+fn vox_compile(args: &[alloc::string::String]) {
+    use crate::belnap::B4;
+    use crate::rebis::codon::{Codon, CodeTable, b4_to_nucleotide};
+    use crate::rebis::AminoAcid;
+
+    if args.is_empty() {
+        sprintln!("vox compile <seq> [--code standard|mitochondrial] [--pdb <path>]");
+        sprintln!("  RNA/DNA in  -> protein out, with real fold info: Chou-Fasman");
+        sprintln!("                 secondary structure, heuristic tertiary contacts,");
+        sprintln!("                 and a real 3D backbone (B4-Ramachandran-NeRF).");
+        sprintln!("  protein in  -> RNA/DNA out (Frobenius-preferred codon per");
+        sprintln!("                 residue, full degeneracy reported), with the");
+        sprintln!("                 SAME fold computed on the input protein.");
+        sprintln!("  A/C/G/T/U-only input reads as nucleic acid; anything else,");
+        sprintln!("  as protein 1- or 3-letter codes. --pdb writes a real PDB");
+        sprintln!("  file, readable back by `rebis pdb`.");
+        return;
+    }
+
+    let mut table = CodeTable::Standard;
+    let mut pdb_path: Option<alloc::string::String> = None;
+    let mut seq_parts: Vec<alloc::string::String> = Vec::new();
+    let mut i = 0;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--code" if i + 1 < args.len() => {
+                table = if args[i + 1] == "mitochondrial" || args[i + 1] == "mito" {
+                    CodeTable::Mitochondrial
+                } else {
+                    CodeTable::Standard
+                };
+                i += 2;
+            }
+            "--pdb" if i + 1 < args.len() => {
+                pdb_path = Some(args[i + 1].clone());
+                i += 2;
+            }
+            other => { seq_parts.push(alloc::string::String::from(other)); i += 1; }
+        }
+    }
+    let seq = seq_parts.join(" ");
+    let table_name = match table { CodeTable::Standard => "standard", CodeTable::Mitochondrial => "mitochondrial" };
+
+    let compact: alloc::string::String = seq.chars()
+        .filter(|c| !c.is_whitespace() && *c != '-' && *c != ',')
+        .collect();
+    let is_nucleic = !compact.is_empty()
+        && compact.chars().all(|c| matches!(c.to_ascii_uppercase(), 'A' | 'C' | 'G' | 'T' | 'U'));
+
+    // Shared tail: fold whatever protein chain either direction produced,
+    // build the real 3D backbone from its own B4 path, print, optionally write.
+    fn report_fold(chain: &[AminoAcid], b4_path: &[B4], pdb_path: Option<&str>) {
+        let fold = crate::rebis::fold::fold_sequence(chain);
+        let n_h = fold.residues.iter().filter(|r| r.secondary == crate::rebis::fold::SecondaryLabel::Helix).count();
+        let n_s = fold.residues.iter().filter(|r| r.secondary == crate::rebis::fold::SecondaryLabel::Sheet).count();
+        let n_c = fold.residues.len() - n_h - n_s;
+        sprintln!();
+        sprintln!("Fold: helix {}  sheet {}  coil {}   ({} contacts, SerpentRod invariant {})",
+            n_h, n_s, n_c, fold.contacts.len(), if fold.frobenius_ok { "PASS" } else { "FAIL" });
+        sprintln!("IG primitives activated: {}/12  Tier: {}", fold.unique_primitives, fold.ouroboricity_tier);
+
+        let steps = crate::rebis::fold3d::rama_steps(b4_path);
+        let backbone = crate::rebis::fold3d::build_backbone(&steps);
+        sprintln!("3D backbone: {} residues placed (B4-Ramachandran-NeRF)", backbone.len());
+
+        if let Some(path) = pdb_path {
+            let elements = crate::rebis::fold3d::group_ss_elements(&steps);
+            let winding = fold.residues.iter().map(|r| r.winding_number).max().unwrap_or(0);
+            let pdb = crate::rebis::fold3d::write_pdb(
+                chain, &backbone, &elements, fold.frobenius_ok, fold.unique_primitives, winding,
+                "COMPILED THROUGH VOX", 'A',
+            );
+            vox_write_pdb_file(path, &pdb);
+        }
+    }
+
+    if is_nucleic {
+        let result = crate::rebis::translate::run_pipeline_table(compact.as_bytes(), table);
+        let chain: Vec<AminoAcid> = result.protein.iter()
+            .filter(|&&aa| aa != AminoAcid::Stop).copied().collect();
+        if chain.is_empty() {
+            sprintln!("No protein translated from '{}'. Needs an ATG/AUG start codon.", seq);
+            return;
+        }
+        let mut b4_path: Vec<B4> = Vec::with_capacity(chain.len());
+        for k in 0..chain.len() {
+            let p = result.start_codon_pos + k * 3;
+            let step = if p + 2 < result.mrna.len() {
+                Codon::from_bytes(result.mrna[p], result.mrna[p + 1], result.mrna[p + 2]).ok()
+            } else { None };
+            b4_path.push(step.map(|c| c.p1).unwrap_or(B4::N));
+        }
+
+        sprintln!("== vox compile: RNA/DNA -> protein ({}) ==", table_name);
+        sprintln!("Input:      {}", seq);
+        sprintln!("mRNA:       {}", core::str::from_utf8(&result.mrna).unwrap_or("???"));
+        sprintln!("Protein:    {}", crate::rebis::translate::format_chain_1letter(&chain));
+        sprintln!("            {}", crate::rebis::translate::format_chain(&chain));
+        sprintln!("Frobenius round-trip verified: {}", if result.frobenius_verified { "YES" } else { "NO" });
+        report_fold(&chain, &b4_path, pdb_path.as_deref());
+    } else {
+        let chain = match crate::rebis::translate::parse_chain(&seq) {
+            Some(c) if !c.is_empty() => c,
+            _ => {
+                sprintln!("Could not parse '{}' as protein or nucleic acid.", seq);
+                sprintln!("Use 3-letter (Met-Ala) or 1-letter (MA) amino acid codes, or A/C/G/T/U.");
+                return;
+            }
+        };
+
+        let mut mrna: Vec<u8> = Vec::with_capacity(chain.len() * 3);
+        let mut b4_path: Vec<B4> = Vec::with_capacity(chain.len());
+        let mut degeneracies: Vec<usize> = Vec::with_capacity(chain.len());
+        for &aa in &chain {
+            degeneracies.push(crate::rebis::genetics::codons_for_aa_table(aa, table).len());
+            match crate::rebis::genetics::preferred_codon_for_aa(aa, table) {
+                Some(c) => {
+                    b4_path.push(c.p1);
+                    mrna.push(b4_to_nucleotide(c.p1));
+                    mrna.push(b4_to_nucleotide(c.p2));
+                    mrna.push(b4_to_nucleotide(c.p3));
+                }
+                None => { sprintln!("No codon exists for {} under the {} table.", aa.name(), table_name); return; }
+            }
+        }
+        let dna = crate::rebis::translate::reverse_transcribe(&mrna);
+        let mut total: u64 = 1;
+        for &d in &degeneracies { if d == 0 { total = 0; break; } total = total.saturating_mul(d as u64); }
+
+        sprintln!("== vox compile: protein -> RNA/DNA ({}) ==", table_name);
+        sprintln!("Input:      {}", crate::rebis::translate::format_chain(&chain));
+        sprintln!("            {}", crate::rebis::translate::format_chain_1letter(&chain));
+        sprintln!("mRNA (Frobenius-preferred codon per residue): {}", core::str::from_utf8(&mrna).unwrap_or("???"));
+        sprintln!("DNA:        {}", core::str::from_utf8(&dna).unwrap_or("???"));
+        sprintln!("Degeneracy: {} total possible mRNA sequences (product of per-residue codon counts)", total);
+        report_fold(&chain, &b4_path, pdb_path.as_deref());
+    }
 }
