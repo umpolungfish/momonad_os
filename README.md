@@ -108,6 +108,16 @@ cargo build --target x86_64-unknown-none --release
 qemu-system-x86_64 -nographic -kernel target/x86_64-unknown-none/release/imonad
 ```
 
+### Distributable Binaries
+
+The hosted REPL (`--features hosted`) is a normal userspace executable and builds natively for Linux, Windows, and macOS:
+
+```bash
+cargo build --release --features hosted
+```
+
+`.github/workflows/release.yml` builds all three on GitHub's own runners — real MSVC on `windows-latest`, real Xcode on `macos-latest` (a universal binary covering both Intel and Apple Silicon via `lipo`), no cross-compile toolchain needed anywhere. It needs the sibling `Vox` and `MoDoT` repos pushed to their GitHub remotes first, since `Cargo.toml` resolves them by relative path (`../Vox`, `../MoDoT/imasm_core`) and the workflow checks them out as siblings to match. Push a tag matching `v*` to cut a release with all three binaries attached, or run it manually from the Actions tab to just produce build artifacts.
+
 ### REPL Commands  
 
 ```
