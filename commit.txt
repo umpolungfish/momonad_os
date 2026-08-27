@@ -1,17 +1,7 @@
-Serve the word instruments automatically after imasm write and imasm derive
+Serve the word instruments on vox lift's shortest open arm too
 
-Chasing the efl_affirm bank leak by hand this session meant running weight,
-banked, cycle and insert as four separate commands after imasm derive handed
-back a word. That is exactly backwards: those four questions apply to any
-word a tool outputs, not only the ones I happen to go looking at by hand.
-
-imasm write and imasm derive now run all four automatically on the word they
-just produced and print the result under the tuple and crystal address,
-instead of leaving it to whoever reads the word to remember to ask. Nothing
-here gates on the answer, closing, open, banked or not, still prints; the
-point is that the information is served, not that anything blocks on it.
-
-Built and confirmed against a live word with a real banked-count defect: the
-derive output now shows the movement, the exposed clear, the ROTAT orbit and
-the five one-glyph repairs in one call, where it used to show only the word,
-the tuple and the crystal address.
+Same principle as imasm write/derive: a word came out of vox lift (the
+shortest B-verdict function in a lifted binary) and the reader was left to
+copy it into weight/banked/cycle/insert by hand. Ran the four automatically
+on that one representative word instead of on every function in the file,
+which would be one full report per function and mostly redundant.

@@ -5963,7 +5963,10 @@ fn vox_lift_file(path: &str) {
         }
         // The word itself is what `insert` and `weight` can act on, so print the
         // shortest open function's word: a repair is found on a word, not on a
-        // tally.
+        // tally. Run the same standing audit `imasm derive`/`imasm write` serve
+        // automatically, on this one representative word rather than on every
+        // function in the file — that would be one full report per function,
+        // most of them redundant with each other.
         if let Some((addr, _)) = open_arms.iter().min_by_key(|(_, l)| *l) {
             for (start, f) in funcs {
                 if start == addr {
@@ -5972,6 +5975,11 @@ fn vox_lift_file(path: &str) {
                     sprintln!("");
                     sprintln!("  shortest open arm, 0x{:x}:", addr);
                     sprintln!("  {}", g);
+                    sprintln!("\n  -- word instruments, run on the above --");
+                    crate::lattice_flow::weight_report(&g);
+                    crate::lattice_flow::banked_report(&g);
+                    crate::lattice_flow::cycle_report(&g);
+                    crate::lattice_flow::insert_report(&g);
                 }
             }
         }
