@@ -95,6 +95,38 @@ A statically-linked binary using only direct syscalls runs for real, end to end.
 
 ## Usage
 
+### Quickstart
+
+After building, boot into the REPL (`cargo run --release --features hosted`, or `qemu-system-x86_64` per below) and try these — each one is a real computation, not a printout of a claim:
+
+```
+fibqc verify           Fibonacci anyon braid algebra, ten identities checked live:
+                        F/S unitarity, Pentagon, Yang-Baxter, spin-statistics, Verlinde...
+qc HTSX                compile the gate sequence H T S X to a real braid word over
+                        Fibonacci anyons, with a measured approximation error
+bi 1 2 -1 -2 1 2       draw a braid word as a strand diagram, in the terminal
+jp 1 1 1               the Jones polynomial of that braid, at the golden-ratio winding
+shor dialetheic 15 7   Shor's period-finding over the Belnap-Fibonacci pipeline —
+                        factors 15 = 3 x 5, full register walk shown
+d12                    the d=12 SIC-POVM existence proof status: 143/143 overlaps closed
+sic                    the SIC-POVM identity as three independent lattice proofs
+                        meeting at one dimension
+```
+
+And to see it run a real compiled program rather than a structural word:
+
+```bash
+gcc -nostdlib -static -o measurements/hellotest measurements/hellotest.c
+cargo run --release --features hosted
+```
+```
+⊙> vox run measurements/hellotest
+hello from inside the twelve
+entry(...) exited(7)   [19 steps in the twelve]
+```
+
+That's a real ELF, lifted to the twelve-glyph module and interpreted with genuine x86-64 registers, memory, and syscalls — see [Real x86 Execution](#real-x86-execution) above.
+
 ### Building  
 
 ```bash

@@ -1,5 +1,3 @@
-I added a release workflow that builds distributable binaries for Linux, Windows, and macOS natively on GitHub's own runners, rather than cross-compiling from here: real MSVC on windows-latest, real Xcode on macos-latest, no SDK extraction or mingw/Wine tricks anywhere.
+I added a Quickstart to the README: real commands a new user can run right after building, each one an actual computation rather than a status printout. Fibonacci anyon braid algebra, a real gate-to-braid compile, a braid drawn in the terminal, its Jones polynomial, Shor's period-finding actually factoring 15, the SIC-POVM existence proof status, and a real compiled ELF run through vox run with genuine syscalls.
 
-The macOS job builds both Apple architectures and merges them into one universal binary with lipo, since a single-arch guess would leave out either the Intel or the Apple Silicon half of actual Mac users. Every job checks out Vox and MoDoT as siblings of mOMonadOS at the branches this crate currently builds against locally, since Cargo.toml resolves them by relative path and the runner's checkout has to match that layout.
-
-This only takes effect once I push mOMonadOS, Vox, and MoDoT to their remotes — a tag push matching v* then cuts a release with all three binaries attached, and a manual run from the Actions tab just produces build artifacts. Documented in the README under a new Distributable Binaries section.
+Verified every one of these against the built hosted binary before writing it down, rather than trusting the menu text.
