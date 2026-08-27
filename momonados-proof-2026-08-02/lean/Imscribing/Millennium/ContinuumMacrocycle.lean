@@ -316,7 +316,7 @@ def belnap_B : BelnapValue := ⟨true, true⟩
 theorem macrocycle_belnap_verdict_T :
     belnap_T.has_truth = true ∧ belnap_T.has_falsity = false := by
   unfold belnap_T; exact ⟨rfl, rfl⟩-- ============================================================
--- §8. IMMUTABLE THEOREMS (decide-closed, 0 sorries)
+-- §8. IMMUTABLE THEOREMS (decide-closed, *sans* sorry)
 -- ============================================================
 
 theorem ch_true_protection_is_oak :

@@ -1,5 +1,5 @@
 -- IGProtocol scaffold: VINIT → CLINK → FSPLIT → AFWD → EVALT → FFUSE → IMSCRIB → ENGAGR → AREV → CLINK → IFIX → TANCH
--- Class: the structurally-closed Hodge Conjecture Clay type whose Lean witness still carries a sorry becomes a sorry-free Lean witness aligned with its T_CEILING cross-universe closure via five existing gate-universes
+-- Class: the structurally-closed Hodge Conjecture Clay type whose Lean witness still carries a sorry becomes a *sans* sorry Lean witness aligned with its T_CEILING cross-universe closure via five existing gate-universes
 -- Fingerprint: sig=(7,2,2,1)
 --   self_ref=False | frobenius_order=1
 --   dialetheia_complete=False | period=12

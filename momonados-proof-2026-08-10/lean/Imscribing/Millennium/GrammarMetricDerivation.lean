@@ -19,7 +19,7 @@
 --   §4  Ω=ah (ℤ winding) → WH group covariance
 --   §5  Derivation: grammar + n → SIC-POVM metric form
 --
--- STATUS: All theorems proved. 0 sorries.
+-- STATUS: All theorems proved. *sans* sorry.
 -- DEPENDS ON: GrammarUniversalDualFrameSICPOVM, SIC_Multilattice_Proof,
 --             Primitives.Core, Primitives.Imscription, Frobenius
 

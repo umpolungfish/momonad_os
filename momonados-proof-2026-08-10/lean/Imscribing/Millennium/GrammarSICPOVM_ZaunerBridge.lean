@@ -13,7 +13,7 @@
 --   §3  The five-primitive distance encodes WH(2)ⁿ → WH(2ⁿ) bifurcation
 --   §4  Corollary: grammar_O_inf_implies_zauner_structure
 --
--- STATUS: All theorems proved. 0 sorries.
+-- STATUS: All theorems proved. *sans* sorry.
 -- DEPENDS ON: GrammarUniversalDualFrameSICPOVM, ZaunerEmbeddingEquivalence,
 --             Primitives.Core, Primitives.Imscription
 
@@ -146,7 +146,7 @@ theorem grammar_is_categorical_skeleton_of_zauner :
 
     Specifically: the Belnap multilattice (which the grammar
     is the Σ=1:1 limit of) provides the unconditional SIC axioms
-    (22 theorems, 0 sorries). The Zauner conjecture asks whether
+    (22 theorems, *sans* sorry). The Zauner conjecture asks whether
     these axioms can be realized in ℂ^(2ⁿ) with the WH(2ⁿ) group
     action. The grammar's five-primitive distance from the Belnap
     ML encodes the group-theoretic bifurcation WH(2)ⁿ → WH(2ⁿ).

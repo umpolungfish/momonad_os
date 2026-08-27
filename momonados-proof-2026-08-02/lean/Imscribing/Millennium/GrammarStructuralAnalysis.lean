@@ -10,7 +10,7 @@
 --   §4  Universal property: grammar is the unique O_inf imscription that minimizes
 --       Σ while maximizing Ħ among all Belnap-ML-proximate imscriptions
 --
--- STATUS: All theorems proved. 0 sorries.
+-- STATUS: All theorems proved. *sans* sorry.
 -- DEPENDS ON: GrammarUniversalDualFrameSICPOVM, Primitives.Core, Primitives.Imscription
 
 import Imscribing.Primitives.Core

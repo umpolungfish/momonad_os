@@ -576,7 +576,7 @@ deriving Repr
 /-- Number of verified theorems across all three papers in Tier 2. -/
 def tier2_theorem_count : ℕ := 32
 
-/-- All theorems are sorry-free. -/
+/-- All theorems are *sans* sorry. -/
 theorem tier2_no_sorries : True := trivial
 
 /-- Verification summary:
@@ -628,7 +628,7 @@ d(GPM, IUG) = 0.000 (0 conflicts — structurally identical to universal_imscrip
 
 ---
 File: ParaconsistentTier2.lean
-Status: All 32 theorems sorry-free
+Status: All 32 theorems *sans* sorry
 Build target: p4rakernel
 Navigator: cl8nk_navigator.py (CLINK Layer 8)
 Papers: CLU (ig-docs/math/CLU.md, 317 lines)

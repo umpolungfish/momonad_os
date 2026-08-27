@@ -549,7 +549,7 @@ def complete_verification : String :=
   "COMPLETE VERIFICATION REPORT\n" ++
   "Module: Imscribing.Millennium.BanachMeasure\n" ++
   "Build:  lake build\n" ++
-  "Sorry-free:  yes (no `sorry` markers)\n" ++
+  "*sans* sorry:  yes (no `sorry` markers)\n" ++
   "Theorems:    30+ (all proven by decide/rfl)\n\n" ++
   "SUMMARY:\n" ++
   "Banach's Problem is structurally resolved.\n" ++

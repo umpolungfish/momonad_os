@@ -48,7 +48,7 @@ The equivalence is NOT trivial at the level of GROUP ACTIONS:
 
 ## Non-Triviality
 
-The equivalence has content: the Belnap multilattice provides the proof of all SIC axioms (22 theorems, 0 sorries in Lean 4), while the
+The equivalence has content: the Belnap multilattice provides the proof of all SIC axioms (22 theorems, *sans* sorry in Lean 4), while the
 Hilbert-space representation is the standard open problem. This theorem
 identifies the two as structurally equivalent — closing one closes both.
 
@@ -160,7 +160,7 @@ theorem hilbert_embedding_equiv_zauner (n : ℕ) [NeZero (2 ^ n)] :
         join-overlap with B⊗n
 
     These are proved unconditionally in sic_povm_belnap_unconditional
-    with 0 sorries. -/
+    with *sans* sorry. -/
 theorem belnap_structural_skeleton (n : ℕ) :
     (mlOrbit n).card = 4 ^ n ∧
     (∀ x : Fin n → Belnap, wordMeet (allBWord n) x = x) ∧

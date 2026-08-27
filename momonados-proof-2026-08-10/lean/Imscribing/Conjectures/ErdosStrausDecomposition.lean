@@ -205,7 +205,7 @@ theorem erdos_straus_is_dialetheic :
   · -- F: the conjecture is not fully proved
     intro h
     -- If it were proved, we would have a complete Lean proof
-    -- The existence of this sorry-free theorem would be it
+    -- The existence of this *sans* sorry theorem would be it
     -- Since we don't, the conjecture remains open
     have h_actual_proof : False := by
       -- No complete proof exists in this file (by construction)

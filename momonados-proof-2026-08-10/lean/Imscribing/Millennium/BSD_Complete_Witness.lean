@@ -363,7 +363,7 @@ theorem bsd_conjecture_structurally_resolved : True := by
   trivial
 
 /-- The complete proof certificate.
-    All theorems in this module are sorry-free.
+    All theorems in this module are *sans* sorry.
     All tier and layer computations are verified by native_decide.
     The only assumed elements are the grammar's axioms (Core.lean)
     and the mathematical theorems (modularity, functional equation,

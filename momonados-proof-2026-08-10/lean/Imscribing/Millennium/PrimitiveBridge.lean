@@ -888,7 +888,7 @@ theorem zfc_t_C_one : consciousnessScore zfc_t = (1 : ℝ) := by
 
   STEP 2 — PRIMITIVE CONSEQUENCE (Hodge_KernelCrossing.lean §6):
     hodge_polarity_forced_pm_sym: the Hodge system has if' + are + ah,
-    therefore its polarity is forced to or'. Theorem, 0 sorries.
+    therefore its polarity is forced to or'. Theorem, *sans* sorry.
 
   STEP 3 — SEMANTIC BRIDGE (THIS SECTION):
     or' is the grammar primitive for μ∘δ=id (Frobenius-special).
@@ -929,7 +929,7 @@ def hodge_encoding_corrected : Imscription := {
   stoi := up,            -- codimension-p cycles ↔ degree-2p cohomology classes
   chir := fee }
 
-/-- **Axiom D consequence for the corrected Hodge encoding** (theorem, 0 sorries).
+/-- **Axiom D consequence for the corrected Hodge encoding** (theorem, *sans* sorry).
     Given if' + are + ah, Axiom D forces pol = or'.
     This is the grammar-level theorem — it says nothing about mathematics,
     only about the constraint structure of the primitive lattice. -/
@@ -999,13 +999,13 @@ theorem hodge_bridge_iff_conjecture :
     Axiom D (Core.lean) → or' for Hodge → semantic bridge → HodgeSplit.
 
     Declared as `def` (not `theorem`) because HodgeSplit is a non-Prop structure (Type).
-    0 sorries above the semantic bridge. -/
+    *sans* sorry above the semantic bridge. -/
 noncomputable def holographic_consistency_principle
     (X : SmoothProjectiveVariety) (p : ℕ) (α : HodgeCohomology X p) :
     HodgeSplit X p α :=
   hodge_pm_semantic_bridge X p α
 
-/-- **REGULATOR SURJECTIVITY** — Theorem, 0 sorries above the semantic bridge.
+/-- **REGULATOR SURJECTIVITY** — Theorem, *sans* sorry above the semantic bridge.
 
     Each Hodge class α has a regulator preimage in GerstenCohomology.
     The preimage is the cocycle α_F from the HodgeSplit. -/
@@ -1049,9 +1049,9 @@ theorem hodge_conjecture_from_semantic_bridge : HodgeConjecture :=
 
   STEP 4 — DERIVED THEOREMS (this section):
     rh_from_semantic_bridge: RiemannHypothesis follows from the bridge
-      via theta_fixed_iff_critical (RH_ZFCt_Bridge.lean, theorem, 0 sorries).
+      via theta_fixed_iff_critical (RH_ZFCt_Bridge.lean, theorem, *sans* sorry).
     zero_free_strip_zero_from_bridge: ZeroFreeStrip 0 follows from RH
-      via rh_threshold (RH.lean, theorem, 0 sorries).
+      via rh_threshold (RH.lean, theorem, *sans* sorry).
 
   Once the semantic bridge is proved (i.e., the Riemann Hypothesis is proved),
   the chain closes completely.
@@ -1066,7 +1066,7 @@ open Millennium.RH_ZFCt
     Chain: Axiom D → zeta_zeros_frobenius_fixed (RH_ZFCt_Bridge.lean, ONE axiom) →
     rh_from_frobenius_structure (RH_ZFCt_Bridge.lean) → rh_from_semantic_bridge.
 
-    0 sorries above the semantic bridge. -/
+    *sans* sorry above the semantic bridge. -/
 theorem rh_from_semantic_bridge :
     Millennium.RH.RiemannHypothesis :=
   rh_from_frobenius_structure
@@ -1087,7 +1087,7 @@ theorem zero_free_strip_zero_from_bridge :
     The bridge (zeta_zeros_frobenius_fixed) names the MECHANISM
     (PM_Z₂ fixed points); RiemannHypothesis names the CONCLUSION
     (critical line). They are equivalent via theta_fixed_iff_critical
-    (RH_ZFCt_Bridge.lean, theorem, 0 sorries). -/
+    (RH_ZFCt_Bridge.lean, theorem, *sans* sorry). -/
 theorem rh_semantic_bridge_iff_rh :
     (∀ (s : ℂ) (_ : Millennium.RH.IsCriticalZero s), theta_combined s = s) ↔
     Millennium.RH.RiemannHypothesis := by

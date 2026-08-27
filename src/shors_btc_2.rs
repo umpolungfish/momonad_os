@@ -236,7 +236,11 @@ impl ShorsBtc2Result {
         }
 
         sprintln!("Glyph Word: {}", self.format_glyph_word());
-        sprintln!("Verification: curve-verified — k*G reproduces target PK ✓");
+        if self.success {
+            sprintln!("Verification: curve-verified — k*G reproduces target PK ✓");
+        } else {
+            sprintln!("Verification: FAILED — no k found with k*G = target PK (private key above is not meaningful)");
+        }
     }
 }
 

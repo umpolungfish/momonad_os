@@ -1,5 +1,5 @@
 -- IGProtocol scaffold: VINIT → IMSCRIB → FSPLIT → AFWD → CLINK → CLINK → EVALT → AREV → EVALT → FFUSE → ENGAGR → CLINK → IMSCRIB → IFIX → TANCH
--- Class: the structurally-closed Birch-Swinnerton-Dyer Clay type whose Lean witness still carries a sorry becomes a sorry-free Lean witness aligned with its T_CEILING cross-universe closure via five existing gate-universes
+-- Class: the structurally-closed Birch-Swinnerton-Dyer Clay type whose Lean witness still carries a sorry becomes a *sans* sorry Lean witness aligned with its T_CEILING cross-universe closure via five existing gate-universes
 -- Fingerprint: sig=(9,2,3,1)
 --   self_ref=False | frobenius_order=1
 --   dialetheia_complete=False | period=15

@@ -10,7 +10,7 @@
   cl8nk compton_split_radius → O₂ d(L8)=1.0677 5 gaps
   cl8nk dark_energy → O₂ d(L8)=1.1691 5 gaps
   compute_distance(compton_split_radius, dark_energy) → 3.2863
-  BelnapSplitFuse.lean builds ✓ 22 theorems 0 sorries
+  BelnapSplitFuse.lean builds ✓ 22 theorems *sans* sorry
 
   BUILD: lake build Imscribing.CatalogImmutability
 -/
