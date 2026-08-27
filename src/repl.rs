@@ -70,7 +70,10 @@ impl History {
 
 pub fn repl(k: &mut Kernel) {
     let mut cfs = CrystalStore::new();
-    let mut line_buf = [0u8; 2097152];
+    // 2 MiB on the stack overflowed under Windows' default ~1 MiB thread
+    // stack the instant `repl()` was entered — Linux's 8 MiB default had
+    // masked this. The buffer itself is unchanged, only where it lives.
+    let mut line_buf = vec![0u8; 2097152].into_boxed_slice();
     let mut history = History::new();
     let mut ctx_stack = ContextStack::new();
     let mut ask_paste = crate::ask::AskPaste::new();
