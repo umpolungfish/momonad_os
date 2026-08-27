@@ -1,3 +1,9 @@
-I added a Quickstart to the README: real commands a new user can run right after building, each one an actual computation rather than a status printout. Fibonacci anyon braid algebra, a real gate-to-braid compile, a braid drawn in the terminal, its Jones polynomial, Shor's period-finding actually factoring 15, the SIC-POVM existence proof status, and a real compiled ELF run through vox run with genuine syscalls.
+FSPLIT3, FFUSE3, and EVALI now run the real SIXTEEN_3 trilattice instead of the stand-in code that treated them as Fsplit/Ffuse and a crude "keep B else N". Their own comments already said as much; they never did real work.
 
-Verified every one of these against the built hosted binary before writing it down, rather than trusting the menu text.
+The real formulas come straight from the Imscriber's Guide, Part IV: FSPLIT3 partitions a value into x∩{T}, x∩{F}, x∩{t,f}; FFUSE3 is the real union of the arms; EVALI is the pass-gate to the information part, the same shape as EVALT and EVALF. Reg16_3 already had every piece of this implemented and tested in imasm_core, just never wired into the kernel's own tick loop.
+
+The fork frame's stored value widened from B4 to Reg16_3 so the two arms FSPLIT3 doesn't give an explicit opcode to (falsity and info) can be unioned into the one slot FSPLIT already had room for. Fsplit and Ffuse round-trip through the same field via an embedding that is the identity on the four B4 values, so their behavior is unchanged, and I wrote a test that checks exactly that. A second test checks EVALI's real formula, and a third builds a program through a live Kernel and confirms FFUSE3 now lands on a different, correct answer than the old stand-in would have given on the same input, not just a relabeled one.
+
+I also added registers a line that surfaces the real SIXTEEN_3 value from the most recent FSPLIT3, FFUSE3, or EVALI, since a value the kernel now genuinely computes should be something a person can actually see, not just something living inside a fork frame.
+
+Full suite holds at 265 passed, 0 failed: the existing 262 plus the three new tests.

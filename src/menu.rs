@@ -108,7 +108,7 @@ pub static STATUS_MENU: &[MenuItem] = &[
     MenuItem { name: "graph",    cmd: "graph",    desc: "ASCII-art token graph with nesting", example: "graph", submenu: None },
     MenuItem { name: "heatmap",  cmd: "heatmap",  desc: "B4 memory heatmap", example: "heatmap", submenu: None },
     MenuItem { name: "memory",   cmd: "memory",   desc: "Dump B4 memory", example: "memory", submenu: None },
-    MenuItem { name: "registers",cmd: "registers",desc: "Show R0-R7", example: "registers", submenu: None },
+    MenuItem { name: "registers",cmd: "registers",desc: "Show R0-R7, plus the real SIXTEEN_3 value from the last FSPLIT3/FFUSE3/EVALI", example: "registers", submenu: None },
     MenuItem { name: "color",      cmd: "color",      desc: "Toggle terminal colour (alias colour)", example: "color on", submenu: None },
     MenuItem { name: "stack",    cmd: "stack",    desc: "Stack depth", example: "stack", submenu: None },
 ];

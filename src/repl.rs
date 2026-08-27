@@ -2836,6 +2836,9 @@ Stopped after {} ticks.", ran);
                     sprint!("R{}:{} ", i, k.registers.read(i).name());
                 }
                 sprintln!();
+                if let Some(r) = k.last_reg16_3 {
+                    sprintln!("SIXTEEN_3 (last FSPLIT3/FFUSE3/EVALI): {}", r.name());
+                }
             }
             "stack" => {
                 sprintln!("Depth: {}", k.stack.depth());
