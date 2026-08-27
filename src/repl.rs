@@ -339,18 +339,30 @@ pub fn repl(k: &mut Kernel) {
                     sprintln!("vox rna <seq> [code] — lift a coding sequence; code is");
                     sprintln!("                       standard or mitochondrial");
                     sprintln!("vox peptide <seq>    — lift a residue sequence");
-                    sprintln!("vox run [sym] --args a,b <file>");
-                    sprintln!("                     — recompile a function to the payload-");
-                    sprintln!("                       carrying twelve-glyph module and RUN it:");
-                    sprintln!("                       real registers, memory, flags, ALU. No");
-                    sprintln!("                       symbol given runs the file's own entry");
-                    sprintln!("                       point instead — the only address a PE");
-                    sprintln!("                       binary offers, since the loader never");
-                    sprintln!("                       reads a symbol table for that format.");
-                    sprintln!("                       Only exit()/exit_group() syscalls are");
-                    sprintln!("                       real; any other syscall halts. One");
-                    sprintln!("                       function, scalar int args/return, hosted");
-                    sprintln!("                       builds only.");
+                    sprintln!("vox run <file> [--argv a,b]");
+                    sprintln!("                     — run the whole file as a real process from");
+                    sprintln!("                       its own entry point: a real argv/envp/auxv");
+                    sprintln!("                       stack underneath it, real registers, memory,");
+                    sprintln!("                       flags, ALU in front of it, and real syscalls");
+                    sprintln!("                       — read/write/open/openat/close go through");
+                    sprintln!("                       the host filesystem and console for real,");
+                    sprintln!("                       mmap/brk hand out a real anonymous heap. No");
+                    sprintln!("                       function ever returns here; it ends by");
+                    sprintln!("                       calling exit, same as any process. This is");
+                    sprintln!("                       the only thing a PE binary offers too, since");
+                    sprintln!("                       the loader never reads a symbol table for");
+                    sprintln!("                       that format.");
+                    sprintln!("vox run <sym> <file> [--args a,b]");
+                    sprintln!("                     — call ONE function directly instead: scalar");
+                    sprintln!("                       int args in, one int back, no process at");
+                    sprintln!("                       all — the older, narrower contract.");
+                    sprintln!("                       A statically-linked binary using only direct");
+                    sprintln!("                       syscalls runs for real end to end. A dynamically-");
+                    sprintln!("                       linked binary's calls into libc, and a glibc");
+                    sprintln!("                       static binary's own TLS/segment-register setup,");
+                    sprintln!("                       are further rungs, not yet built: those halt or");
+                    sprintln!("                       loop rather than silently pretending to work.");
+                    sprintln!("                       Hosted builds only.");
                     sprintln!("A word closes at T, carries an open fork at B, and runs clean");
                     sprintln!("and linear at N. The fork is what the verdict is looking for.");
                 } else {
@@ -5937,13 +5949,19 @@ fn vox_lift_file(_path: &str) {
 /// than pretending to succeed.
 #[cfg(feature = "hosted")]
 fn vox_run_symbol(args: &[alloc::string::String]) {
-    // A single bare token is the FILE, not the symbol: with no name given,
-    // the entry point is what runs. This is the only address a PE binary
-    // offers at all — the loader never populates a symbol table for PE (only
-    // ELF has one to read), so a GUI .exe with no exports has no symbol name
-    // that could ever resolve, whatever you type.
+    // vox run <file> [--argv a,b]            — run it: real process, real
+    //                                           argv/envp/auxv stack, real
+    //                                           syscalls, from its own entry.
+    // vox run <symbol> <file> [--args 1,2]   — call one function directly:
+    //                                           scalar int args in, one int
+    //                                           back, no process at all.
+    // A single bare token is the FILE, not the symbol — with no name given
+    // there is no function to call, so the whole file runs as a process.
+    // This is also the only thing a PE binary offers, since the loader never
+    // populates a symbol table for PE at all (only ELF has one).
     let mut bare: alloc::vec::Vec<alloc::string::String> = alloc::vec::Vec::new();
-    let mut argv: alloc::vec::Vec<i64> = alloc::vec::Vec::new();
+    let mut argv_ints: alloc::vec::Vec<i64> = alloc::vec::Vec::new();
+    let mut argv_strs: alloc::vec::Vec<alloc::string::String> = alloc::vec::Vec::new();
     let mut i = 0;
     while i < args.len() {
         match args[i].as_str() {
@@ -5958,9 +5976,15 @@ fn vox_run_symbol(args: &[alloc::string::String]) {
                             } else {
                                 a.parse().unwrap_or(0)
                             };
-                            argv.push(v);
+                            argv_ints.push(v);
                         }
                     }
+                }
+            }
+            "--argv" => {
+                i += 1;
+                if i < args.len() {
+                    for a in args[i].split(',') { argv_strs.push(a.to_string()); }
                 }
             }
             other => bare.push(other.to_string()),
@@ -5969,14 +5993,14 @@ fn vox_run_symbol(args: &[alloc::string::String]) {
     }
     let (sym, file) = match bare.len() {
         0 => {
-            sprintln!("vox run [symbol] --args a,b <file>");
+            sprintln!("vox run <file> [--argv a,b]   or   vox run <symbol> <file> [--args 1,2]");
             return;
         }
         1 => (alloc::string::String::new(), bare[0].clone()),
         _ => (bare[0].clone(), bare[1..].join(" ")),
     };
     if file.is_empty() {
-        sprintln!("vox run [symbol] --args a,b <file>");
+        sprintln!("vox run <file> [--argv a,b]   or   vox run <symbol> <file> [--args 1,2]");
         return;
     }
     // A `.imasm` file is a saved module: text, already carrying its own
@@ -6004,24 +6028,33 @@ fn vox_run_symbol(args: &[alloc::string::String]) {
         };
         crate::imasm_exec::Machine::new(&crate::imasm_exec::emit(raw))
     };
-    let (addr, label) = if sym.is_empty() {
-        (m.entry, alloc::string::String::from("entry"))
+    m.set_host(std::boxed::Box::new(crate::imasm_exec::StdHost::new()));
+    let addr = if sym.is_empty() {
+        let mut argv = alloc::vec![file.clone()];
+        argv.extend(argv_strs);
+        match m.run_process(&argv, &[], 50_000_000) {
+            Ok(()) => sprintln!("entry(...) ran off the end with no exit call   [{} steps]", m.steps),
+            Err(crate::imasm_exec::Stop::SysExit(c)) => sprintln!("entry(...) exited({})   [{} steps in the twelve]", c, m.steps),
+            Err(crate::imasm_exec::Stop::Halt(e)) => sprintln!("entry(...) halted: {}   [{} steps]", e, m.steps),
+        }
+        m.entry
     } else {
-        match m.resolve(&sym) {
-            Some(a) => (a, sym.clone()),
+        let addr = match m.resolve(&sym) {
+            Some(a) => a,
             None => {
                 sprintln!("no symbol '{}' in {}", sym, file);
                 return;
             }
+        };
+        let argv_str: alloc::vec::Vec<alloc::string::String> =
+            argv_ints.iter().map(|a| a.to_string()).collect();
+        match m.call(addr, &argv_ints, 50_000_000) {
+            Ok(r) => sprintln!("{}({}) = {}   [{} steps in the twelve]", sym, argv_str.join(", "), r, m.steps),
+            Err(crate::imasm_exec::Stop::SysExit(c)) => sprintln!("{}(...) called exit({})   [{} steps in the twelve]", sym, c, m.steps),
+            Err(crate::imasm_exec::Stop::Halt(e)) => sprintln!("{}(...) halted: {}   [{} steps]", sym, e, m.steps),
         }
+        addr
     };
-    let argv_str: alloc::vec::Vec<alloc::string::String> =
-        argv.iter().map(|a| a.to_string()).collect();
-    match m.call(addr, &argv, 50_000_000) {
-        Ok(r) => sprintln!("{}({}) = {}   [{} steps in the twelve]", label, argv_str.join(", "), r, m.steps),
-        Err(crate::imasm_exec::Stop::SysExit(c)) => sprintln!("{}(...) called exit({})   [{} steps in the twelve]", label, c, m.steps),
-        Err(crate::imasm_exec::Stop::Halt(e)) => sprintln!("{}(...) halted: {}   [{} steps]", label, e, m.steps),
-    }
     // The execution above reads the payload-carrying module (real operands).
     // What weight/banked/cycle/imasm-derive read is the bare structural word
     // for the same function — the other half of the same object, not a
