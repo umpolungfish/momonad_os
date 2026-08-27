@@ -335,7 +335,16 @@ pub fn repl(k: &mut Kernel) {
                     tail.join(" ").split_whitespace().map(|s| s.to_string()).collect();
                 if rest.is_empty() || rest[0] == "help" {
                     sprintln!("vox <sub>        — control-flow closure auditor");
-                    sprintln!("vox verdict <word>   — SIXTEEN_3 verdict over a glyph word");
+                    sprintln!("vox verdict <word>   — classic FOUR-valued verdict over a glyph word,");
+                    sprintln!("                       the same close-condition rule the SIXTEEN_3");
+                    sprintln!("                       engine reads, but over T/F/B/N only");
+                    sprintln!("vox sixteen3 check <word>");
+                    sprintln!("                     — the real 16-valued machine (imasm_core::imasm16_3):");
+                    sprintln!("                       full step trace, t/f included, real union/parts");
+                    sprintln!("vox sixteen3 algebra <op> A B");
+                    sprintln!("                     — a trilattice lattice op on two named registers");
+                    sprintln!("                       (leq_i|leq_t|leq_c|meet_t|join_t|meet_c|join_c)");
+                    sprintln!("vox sixteen3 ref     — the live 12-opcode SIXTEEN_3 table");
                     sprintln!("vox evm <hex>        — lift EVM bytecode, verdict its closure");
                     sprintln!("vox wasm <hex>       — lift a WASM body, verdict its closure");
                     sprintln!("vox classify <mn>    — which glyph an instruction lifts to");
@@ -378,6 +387,15 @@ pub fn repl(k: &mut Kernel) {
                             } else {
                                 sprintln!("vox verdict <glyph-word>");
                             }
+                        }
+                        "sixteen3" => {
+                            // The real 16-valued machine (imasm_core::imasm16_3),
+                            // not this command's own classic FOUR-valued verdict
+                            // above — that one reads the same close-condition
+                            // rule the SIXTEEN_3 engine does, but over T/F/B/N,
+                            // never touching t/f. This runs the actual register.
+                            let args: Vec<alloc::string::String> = rest[1..].to_vec();
+                            sprint!("{}", imasm_core::imasm16_3::run(&args));
                         }
                         "lift" => {
                             if rest.len() < 2 {

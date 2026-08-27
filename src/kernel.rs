@@ -323,6 +323,14 @@ impl Kernel {
                 self.registers.write(0, B4::from_u8(r0.wrapping_add(1)));
             }
             Token::Arev => {
+                // ≺'s own table entry names it exactly: "reverse morphism
+                // (involution T↔F, t↔f)" — the real invol(), not a carry like
+                // ≻/⋈/⊙. This is additional to the existing register-0
+                // decrement below, which touches different state and is
+                // untouched by this: the stack's top value gets the real
+                // involution, register 0 keeps its own bookkeeping.
+                let v = self.stack.pop();
+                self.stack.push(reg16_3_to_b4(b4_to_reg16_3(v).invol()));
                 let r0 = self.registers.read(0) as u8;
                 self.registers.write(0, B4::from_u8(r0.wrapping_sub(1)));
             }
@@ -923,5 +931,51 @@ mod sixteen_3_tests {
 
         assert_eq!(k.memory.read(0), B4::N);
         assert_eq!(k.last_reg16_3.map(|r| r.name()), Some("N".to_string()));
+    }
+
+    /// ≺'s own table entry names it exactly: "reverse morphism (involution
+    /// T↔F, t↔f)" — not a carry like ≻/⋈/⊙, and not the old no-op-on-the-stack
+    /// behavior that used to leave the top value untouched while only
+    /// decrementing register 0. T swaps to F, matching the involution on the
+    /// classical slice where no t/f bits are present to also swap.
+    #[test]
+    fn arev_applies_the_real_involution_to_the_stack() {
+        let mut k = Kernel::new();
+        k.program = Program::empty();
+        k.program.push(Token::Vinit); // stack: [N]
+        k.program.push(Token::Afwd);  // register 0: N(0) -> T(1), unrelated to the stack
+        k.program.push(Token::Evalt); // stack top N is not T, filters to N — stack: [N]
+        k.program.push(Token::Engagr); // stack: [N, B] — a live B to invert
+        k.program.push(Token::Arev);  // invol(B) = {T,F} still, B is a fixed point
+        k.program.push(Token::Tanch);
+        k.boot();
+        k.run(20);
+
+        assert_eq!(k.memory.read(0), B4::B, "B is invol's fixed point, same as N");
+    }
+
+    /// The involution is not vacuous, though: a pure-truth value actually
+    /// flips. This is what the old code, which never touched the stack at
+    /// ≺ at all, could never produce.
+    #[test]
+    fn arev_flips_a_pure_truth_value() {
+        let mut k = Kernel::new();
+        k.program = Program::empty();
+        // ≺'s own register-0 decrement (its pre-existing, unrelated
+        // bookkeeping) would otherwise redirect TANCH's target address away
+        // from 0 — register 0 starts at N(0), and wrapping_sub(1) on that
+        // lands on B(3), not back on N. ≻ first cancels it out, the same way
+        // the test above does, so TANCH still writes to address 0.
+        k.program.push(Token::Afwd);
+        k.program.push(Token::Arev);
+        k.program.push(Token::Tanch);
+        // No single existing opcode constructs a bare T from nothing (Evalt/
+        // Evalf are pass-gates on an existing value, Engagr only gives B) —
+        // seed the stack directly rather than chase an indirect construction.
+        k.stack.push(B4::T);
+        k.boot();
+        k.run(20);
+
+        assert_eq!(k.memory.read(0), B4::F, "invol(T) must be F, not the untouched T the old code gave");
     }
 }
