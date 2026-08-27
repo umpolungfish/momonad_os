@@ -83,9 +83,13 @@ The kernel can navigate between 12 dialects with different structural rulesets, 
 
 ### Real x86 Execution  
 
-`vox run [symbol] --args a,b <file>` lifts a function out of a real ELF or PE binary and runs it, for real: `vox_core::imasm_module::emit` produces the payload-carrying twelve-glyph module (each glyph plus its actual registers, immediates, and memory operands, not just the bare structural word `weight`/`banked`/`cycle`/`imasm derive` read), and `vox_core::imasm_vm::Machine` interprets it with genuine registers, byte-addressed memory, flags, and ALU semantics — System V calling convention in, a real computed value out. With no symbol given it runs from the file's own entry point instead, which is the only address a PE binary (a `.exe`) offers at all: the loader never reads a symbol table for that format, only ELF has one. Verified byte-for-byte against the standalone `vox` binary, both on a compiled `add(a,b)` function by name and on a minimal static ELF's own entry point (`entry(...) called exit(42)`, matching its real exit code).
+`vox run <file> [--argv a,b]` lifts a real ELF or PE binary and runs it as an actual process, for real: `vox_core::imasm_module::emit` produces the payload-carrying twelve-glyph module (each glyph plus its actual registers, immediates, and memory operands, not just the bare structural word `weight`/`banked`/`cycle`/`imasm derive` read), and `vox_core::imasm_vm::Machine` interprets it with genuine registers, byte-addressed memory, flags, and ALU semantics. It lays out a real `argv`/`envp`/`auxv` stack the way the psABI guarantees at process entry and runs from the file's own entry point — the only address a PE binary (a `.exe`) offers at all, since the loader never reads a symbol table for that format, only ELF has one. `read`/`write`/`open`/`openat`/`close` go through a `Host` bridge to the real host filesystem and console, and `mmap`/`brk` hand out a real anonymous heap from a bump cursor: a guest that opens a file, reads it, writes to stdout, or allocates memory does all of that for real, not a simulation of it.
 
-This runs one function at a time with scalar integer arguments and a single integer return, not a full process: `exit`/`exit_group` are the only real syscalls, every other syscall halts rather than pretending to succeed, and there is no dynamic linker, no `main`/argv/envp setup, no threads. Hosted builds only — it needs a filesystem to read the binary from.
+`vox run <symbol> <file> [--args a,b]` calls one named function directly instead: scalar integer arguments in, one integer back, System V calling convention, no process at all — the older, narrower contract, unchanged.
+
+Verified byte-for-byte against native execution on four hand-written static ELF fixtures (`measurements/hellotest.c`, `measurements/brktest.c`, `measurements/filetest.c`, `measurements/exittest.c`): a bare `write()`+`exit()`, a `brk()`+`mmap()`+`write()` heap test, an `openat()`/`read()`/`write()`/`close()` round trip on a real file, and the original exit-only entry point — output and exit code both match ground truth exactly, both against the standalone `vox` binary and inside mOMonadOS's own REPL.
+
+A statically-linked binary using only direct syscalls runs for real, end to end. Two rungs above that are named, not silently absorbed: dynamic linking (a binary's calls into libc's PLT/GOT resolve nowhere, since no shared library is ever loaded) and thread-local storage (a glibc-static binary's own `_start` sets up a segment register this VM has no notion of at all, and spins rather than completing — confirmed by tracing the native binary's real syscalls). Both halt or run off the step limit rather than pretending to succeed. Hosted builds only — it needs a filesystem to read the binary from and to back real file I/O.
 
 ---
 
@@ -117,8 +121,10 @@ clay             → Clay Millennium status
 triple           → von Neumann superoperator algebra
 ruleset          → Cross-dialect navigation
 fibqc            → Topological quantum computer
-vox run <sym> --args a,b <file>
-                 → real x86 execution over the twelve-glyph module
+vox run <file> [--argv a,b]
+                 → run it as a real process: real argv/envp/auxv, real syscalls
+vox run <sym> <file> [--args a,b]
+                 → call one function directly, no process
 ```
 
 ---
