@@ -75,6 +75,7 @@ mod pari_integration;
 mod tower_polynomials;
 mod parasm;
 mod belnap_shor;
+mod prime_winding;
 mod belnap_shor_factors;
 mod fibonacci_shor;
 mod belnap_ring_shor;

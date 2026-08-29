@@ -1212,6 +1212,38 @@ pub fn repl(k: &mut Kernel) {
                     }
                 }
             }
+            "prime_winding" => {
+                use crate::prime_winding::*;
+                let sub = parts.next().unwrap_or("");
+                match sub {
+                    "" | "help" => sprintln!("{}", help()),
+                    "word" => sprintln!("{}", word()),
+                    "find" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("prime_winding find: usage: prime_winding find <n>");
+                        } else {
+                            sprintln!("{}", find(n_str));
+                        }
+                    },
+                    "factor" => {
+                        let n_str = parts.next().unwrap_or("");
+                        if n_str.is_empty() {
+                            sprintln!("prime_winding factor: usage: prime_winding factor <n>");
+                        } else {
+                            sprintln!("{}", factor(n_str));
+                        }
+                    },
+                    "cycle" => sprintln!("{}", cycle()),
+                    "tuple" => sprintln!("{}", tuple()),
+                    "verdict" => sprintln!("{}", verdict()),
+                    "artifact" => sprintln!("{}", artifact()),
+                    other => {
+                        sprintln!("prime_winding: unknown subcommand '{}'", other);
+                        sprintln!("{}", help());
+                    }
+                }
+            }
             "qft" => {
                 let sub = parts.next().unwrap_or("");
                 match sub {

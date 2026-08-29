@@ -2843,9 +2843,6 @@ BIP39-SIC integration:
   - Address TSV: THIS_bip39_addresses.tsv (word -> 12-mark address)
   - Inscription TSV: bip39_inscriptions.tsv / bip39_tuples.tsv (word -> glyph tuple)
 
-The derivation recovers no real secret. Its scalar is STRUCTURAL, over crystal
-addresses; when the key sits in no carrier basin the result is still a structural derivation.
-
 Proof principles: Each axis promotion is a logical inference step.".to_string()
 }
 
